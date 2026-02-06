@@ -2,11 +2,14 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 
   .content {
     flex: 1;
-    overflow-y: auto;
-    padding-bottom: 10px;
+    overflow-y: hidden;
+
+    .scroll-view {
+      height: 100%;
+      overflow: hidden;
+    }
   }
 }

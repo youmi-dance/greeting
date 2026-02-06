@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-import { View } from '@tarojs/components'
+import { View, ScrollView } from '@tarojs/components'
 import { Grid, GridItem, Image } from '@nutui/nutui-react-taro'
 import CustomTabBar from '../../components/CustomTabBar';
 import './index.scss'
@@ -10,7 +10,7 @@ function Home() {
   // const [visible, setVisible] = useState(false)
 
   const renderList = () => {
-    const list = Array(7).fill('祝福视频')
+    const list = Array(17).fill('祝福视频')
     return (
       <Grid columns={2}>
         {
@@ -27,11 +27,11 @@ function Home() {
   return (
     <View className='home'>
       <View className='content'>
-        {renderList()}
+        <ScrollView className='scroll-view' scrollY enhanced showScrollbar={false}>
+          {renderList()}
+        </ScrollView>
       </View>
-      <View className='tab-bar'>
-        <CustomTabBar />
-      </View>
+      <CustomTabBar />
     </View>
   )
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Tabbar, TabbarItem } from '@nutui/nutui-react-taro'
 import Taro, { useRouter } from '@tarojs/taro'
-import { View } from '@tarojs/components';
 import { AddRectangle, Home as HomeIcon, User } from '@nutui/icons-react-taro';
 import './index.scss'
 
@@ -38,25 +37,23 @@ const CustomTabBar = () => {
   }
 
   return (
-    <View className='cmp_tab-bar2'>
-      <Tabbar
-        className='cmp_tab-bar'
-        value={activeTab}
-        onSwitch={handleSwitch}
-        safeArea
-      >
-        {tabList.map(({path, IconCmp, title, unreadNum}) => (
-          <TabbarItem
-            key={path}
-            title={title}
-            value={unreadNum}
-            icon={
-              <IconCmp size={18} />
+    <Tabbar
+      className='cmp_tab-bar'
+      value={activeTab}
+      onSwitch={handleSwitch}
+      safeArea
+    >
+      {tabList.map(({path, IconCmp, title, unreadNum}) => (
+        <TabbarItem
+          key={path}
+          title={title}
+          value={unreadNum}
+          icon={
+            <IconCmp size={18} />
             }
-          />
+        />
         ))}
-      </Tabbar>
-    </View>
+    </Tabbar>
   )
 }
 
