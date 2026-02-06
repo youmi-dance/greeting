@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '我的祝福'
+  navigationBarTitleText: '悠米祝福'
 })

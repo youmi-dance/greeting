@@ -3,6 +3,7 @@ import { Tabbar, TabbarItem } from '@nutui/nutui-react-taro'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 import { AddRectangle, Home as HomeIcon, User } from '@nutui/icons-react-taro';
+import './index.scss'
 
 /**
  * 页面路径与索引的映射表
@@ -37,12 +38,12 @@ const CustomTabBar = () => {
   }
 
   return (
-    <View>
+    <View className='cmp_tab-bar2'>
       <Tabbar
         className='cmp_tab-bar'
         value={activeTab}
         onSwitch={handleSwitch}
-        fixed
+        safeArea
       >
         {tabList.map(({path, IconCmp, title, unreadNum}) => (
           <TabbarItem
