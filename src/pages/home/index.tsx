@@ -26,10 +26,10 @@ function Home() {
 
   return (
     <View className='home'>
-      <View className='home_content'>
+      <View className='content'>
         {renderList()}
       </View>
-      <View className='home_tab-bar'>
+      <View className='tab-bar'>
         <CustomTabBar />
       </View>
     </View>

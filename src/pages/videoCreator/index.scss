@@ -1,7 +1,12 @@
-.nutui-react-demo {
+.video-creator {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+  }
 }

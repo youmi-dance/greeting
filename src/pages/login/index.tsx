@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { View } from '@tarojs/components'
 import { Button, ConfigProvider, TextArea, Dialog } from '@nutui/nutui-react-taro'
 import enUS from '@nutui/nutui-react-taro/dist/locales/en-US'
