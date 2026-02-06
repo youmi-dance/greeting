@@ -2,7 +2,7 @@
 	"miniprogramRoot": "dist/",
 	"projectname": "greeting",
 	"description": "A WeChat mini program for sending greeting.",
-	"appid": "touristappid",
+	"appid": "wx2ab04daab467a6b3",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,

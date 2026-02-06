@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
-import { useDidShow, useDidHide } from '@tarojs/taro'
+import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
 // 全局样式
 import './app.scss'
 
-function App(props) {
+function App(props: React.PropsWithChildren) {
+  const { children } = props
   // 可以使用所有的 React Hooks
-  useEffect(() => {})
+  useEffect(() => {
+    (async () => {
+      const { code } = await Taro.login()
+      console.log('~~~~~~~ code', code);
+    })()
+  }, []);
 
   // 对应 onShow
   useDidShow(() => {})
@@ -13,7 +19,7 @@ function App(props) {
   // 对应 onHide
   useDidHide(() => {})
 
-  return props.children
+  return children
 }
 
 export default App

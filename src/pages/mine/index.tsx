@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { View } from '@tarojs/components'
 import { Button, ConfigProvider, TextArea, Dialog } from '@nutui/nutui-react-taro'
 import enUS from '@nutui/nutui-react-taro/dist/locales/en-US'
 import zhCN from '@nutui/nutui-react-taro/dist/locales/zh-CN'
+import CustomTabBar from '../../components/CustomTabBar';
 import './index.scss'
 
 function Index() {
@@ -11,7 +12,7 @@ function Index() {
   const [visible, setVisible] = useState(false)
   const [translated] = useState({
     zhCN: {
-      welcome: '欢迎使用 NutUI React 开发 Taro 多端项目。',
+      welcome: 'HOME。',
       button: '使用英文',
       open: '点击打开',
     },
@@ -24,7 +25,6 @@ function Index() {
   const handleSwitchLocale = () => {
     setLocale(locale === zhCN ? enUS : zhCN)
   }
-
   return (
     <ConfigProvider locale={locale}>
       <View className='nutui-react-demo'>
@@ -45,6 +45,7 @@ function Index() {
           <TextArea disabled showCount maxLength={20} />
         </View>
       </View>
+      <CustomTabBar />
     </ConfigProvider>
   )
 }
