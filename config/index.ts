@@ -29,7 +29,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     framework: 'react',
     compiler: {
 
-      type: 'webpack5', 
+      type: 'webpack5',
       prebundle: {
         enable: false
       }
@@ -52,6 +52,9 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
             generateScopedName: '[name]__[local]___[hash:base64:5]'
           }
         }
+      },
+      miniCssExtractPluginOption: {
+        ignoreOrder: true, // 设置为 true 忽略顺序警告
       },
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)

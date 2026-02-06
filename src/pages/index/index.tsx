@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { View } from '@tarojs/components'
 import { Button, ConfigProvider, TextArea, Dialog } from '@nutui/nutui-react-taro'
-import enUS from '@nutui/nutui-react-taro/dist/locales/en-US'
-import zhCN from '@nutui/nutui-react-taro/dist/locales/zh-CN'
+// import enUS from '@nutui/nutui-react-taro/dist/locales/en-US'
+// import zhCN from '@nutui/nutui-react-taro/dist/locales/zh-CN'
 import './index.scss'
 
 function Index() {
-  const [locale, setLocale] = useState(zhCN)
-  const localeKey = locale === zhCN ? 'zhCN' : 'enUS'
+  const [locale, setLocale] = useState('zhCN')
+  const localeKey = locale === 'zhCN' ? 'zhCN' : 'enUS'
   const [visible, setVisible] = useState(false)
   const [translated] = useState({
     zhCN: {
@@ -22,11 +22,11 @@ function Index() {
     },
   })
   const handleSwitchLocale = () => {
-    setLocale(locale === zhCN ? enUS : zhCN)
+    setLocale(locale === 'zhCN' ? 'enUS' : 'zhCN')
   }
 
   return (
-    <ConfigProvider locale={locale}>
+    <ConfigProvider>
       <View className='nutui-react-demo'>
         <View>{translated[localeKey].welcome}</View>
         <View>

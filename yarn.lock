@@ -1442,7 +1442,7 @@
 
 "@nutui/icons-react-taro@^1.0.5":
   version "1.0.5"
-  resolved "https://registry.npmjs.org/@nutui/icons-react-taro/-/icons-react-taro-1.0.5.tgz"
+  resolved "https://registry.yarnpkg.com/@nutui/icons-react-taro/-/icons-react-taro-1.0.5.tgz#c0bbe6ef54bad06adeb8a17448cfcf45c6798bcb"
   integrity sha512-p7dCW29wASH/qQ1OaUGGKA6PRV33wDPb80+qrHnWtT40syIb0W+e92mpplbULWM01s+GYVGyUU3i8b7Iy7qfvw==
 
 "@nutui/jdesign-icons-react-taro@1.0.6-beta.2":
@@ -1452,7 +1452,7 @@
 
 "@nutui/nutui-react-taro@^2.6.14":
   version "2.7.14"
-  resolved "https://registry.npmjs.org/@nutui/nutui-react-taro/-/nutui-react-taro-2.7.14.tgz"
+  resolved "https://registry.yarnpkg.com/@nutui/nutui-react-taro/-/nutui-react-taro-2.7.14.tgz#2d3c601fb064e41074e865892c47701c25ba9639"
   integrity sha512-BATiRezhEMdL/UyYZfwEq5EJMmHj4MbWcEZCVaHCod9ftGK+HPCyPZBiqoCRC2q7qVXXicYoDbJ98iPtvqMdzw==
   dependencies:
     "@babel/runtime" "^7.23.9"
@@ -6862,7 +6862,7 @@ lodash.debounce@^4.0.8:
 
 lodash.isequal@^4.5.0:
   version "4.5.0"
-  resolved "https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
 
 lodash.kebabcase@^4.1.1:
