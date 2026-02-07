@@ -116,23 +116,48 @@ const VoiceRecord: React.FC = () => {
   const uploadAudioFile = async (filePath: string) => {
     Taro.showLoading({ title: '语音解析中...' });
     try {
-      const res = await Taro.uploadFile({
-        url: 'https://your-api.com/v1/voice/upload', // 替换真实接口
+      // 文件后缀
+      const ext = '.' + filePath.split('.').pop();
+      const cloudPath = `uploads/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
+
+      const res = Taro.cloud.uploadFile({
+        cloudPath: cloudPath,
         filePath: filePath,
-        name: 'file',
         success: (response) => {
-          if (response.statusCode === 200) {
-            Taro.showToast({ title: '录制成功', icon: 'success' });
-            setTimeout(() => setDuration(0), 1000);
-          }
+          Taro.showToast({ title: '录制成功', icon: 'success' });
+          setTimeout(() => setDuration(0), 1000);
+          // 上传后返回的文件【临时]url
+          console.log("上传采集声音的url: " + getTempFileUrl(response.fileID));
+        },
+        fail: err => {
+          console.log(err);
         }
       });
+
     } catch (error) {
       console.error('上传出错:', error);
     } finally {
       Taro.hideLoading();
     }
+
   };
+
+  // 获取上传文件的临时链接
+  function getTempFileUrl = async (fileID) => {
+    try {
+      const res = await Taro.cloud.getTempFileURL({
+        fileList: [fileID]
+      })
+
+      if (res.fileList && res.fileList[0]) {
+        const url = res.fileList[0].tempFileURL;
+        console.log('url', url);
+        return url;
+      }
+    } catch (error) {
+      console.error('获取临时链接失败:', error)
+    }
+  }
 
   const progressDeg = (duration / MAX_SEC) * 360;
 

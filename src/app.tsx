@@ -20,6 +20,12 @@ function App(props: React.PropsWithChildren) {
   // 对应 onHide
   useDidHide(() => {})
 
+  // 初始化微信云环境
+  Taro.cloud.init({
+    env: 'cloud1-3gfloa3s868e6640', // 替换为你的云环境ID
+    traceUser: true, // 记录用户访问
+  })
+
   return (
     <View>
       {children}
