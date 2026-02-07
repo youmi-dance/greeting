@@ -5,7 +5,7 @@ import Taro from '@tarojs/taro';
 import CustomTabBar from '../../components/CustomTabBar';
 import './index.scss';
 
-const CreateVideo: React.FC = () => {
+const VideoCreator: React.FC = () => {
   const [currentFiles, setCurrentFiles] = useState<any[]>([]);
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -51,75 +51,72 @@ const CreateVideo: React.FC = () => {
   }, [currentFiles, blessingText]);
 
   return (
-    <View className='page-wrapper'>
-      <View className='bg-decorator' />
+    <View className='video-creator'>
+      <View className='content'>
 
-      <ScrollView
-        scrollY
-        enhanced
-        showScrollbar={false}
-        className='content-flow'
-      >
-        <View className='header-section'>
-          <View className='main-title'>定制专属视频</View>
-          <View className='sub-title'>上传照片并填写祝福，开启 AI 创作</View>
-        </View>
+        <View className='bg-decorator' />
 
-        {/* 第一步 */}
-        <View className='glass-card'>
-          <View className='card-header'>
-            <View className='indicator' />
-            <View className='label'>第一步：上传素材</View>
+        <ScrollView
+          scrollY
+          enhanced
+          showScrollbar={false}
+          className='content-flow'
+        >
+          <View className='header-section'>
+            <View className='main-title'>定制专属视频</View>
+            <View className='sub-title'>上传照片并填写祝福，开启 AI 创作</View>
           </View>
-          <Uploader
-            url='YOUR_SERVER_URL'
-            onChange={handleUploadChange}
-            onDelete={handleUploadChange}
-          >
-            <View className='upload-placeholder'>
-              <View className='plus-icon'>+</View>
-              <View className='text'>{currentFiles.length > 0 ? '已选择' : '上传照片'}</View>
+
+          {/* 第一步 */}
+          <View className='glass-card'>
+            <View className='card-header'>
+              <View className='indicator' />
+              <View className='label'>第一步：上传照片</View>
             </View>
-          </Uploader>
-        </View>
-
-        {/* 第二步 */}
-        <View className='glass-card'>
-          <View className='card-header'>
-            <View className='indicator' />
-            <View className='label'>第二步：文字寄语</View>
+            <Uploader
+              className='uploader'
+              url='YOUR_SERVER_URL'
+              // onChange={handleUploadChange}
+              // onDelete={handleUploadChange}
+            />
           </View>
-          <TextArea
-            placeholder='写下您的美好祝愿...'
-            className='custom-textarea'
-            maxLength={30}
-            showCount
-            value={blessingText}
-            onChange={(v) => setBlessingText(v)}
-          />
-        </View>
 
-        {/* 生成按钮：现在它在 ScrollView 内部，会随页面滚动 */}
-        <View className='btn-container'>
-          <Button
-            block
-            className='custom-gradient-btn'
-            loading={loading}
-            onClick={handleGenerate}
-          >
-            开启智能生成
-          </Button>
-          {/* 增加一点底部间距，防止离 Tabbar 太近 */}
-          <View className='bottom-spacer' />
-        </View>
-      </ScrollView>
+          {/* 第二步 */}
+          <View className='glass-card'>
+            <View className='card-header'>
+              <View className='indicator' />
+              <View className='label'>第二步：文字寄语</View>
+            </View>
+            <TextArea
+              placeholder='写下您的美好祝愿...'
+              className='custom-textarea'
+              maxLength={30}
+              showCount
+              value={blessingText}
+              onChange={(v) => setBlessingText(v)}
+            />
+          </View>
 
-      {/* 底部 Tabbar：依然在 ScrollView 之外，保持在屏幕最下方 */}
-      <View>
-        <CustomTabBar />
+          {/* 生成按钮：现在它在 ScrollView 内部，会随页面滚动 */}
+          <View className='btn-container'>
+            <Button
+              type='primary'
+              block
+              className='custom-gradient-btn'
+              loading={loading}
+              onClick={handleGenerate}
+            >
+              开启智能生成
+            </Button>
+            {/* 增加一点底部间距，防止离 Tabbar 太近 */}
+            <View className='bottom-spacer' />
+          </View>
+        </ScrollView>
       </View>
+
+      <CustomTabBar />
     </View>
   );
 };
 
-export default CreateVideo;
+export default VideoCreator;
