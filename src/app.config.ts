@@ -1,8 +1,7 @@
 export default defineAppConfig({
   pages: [
-    'pages/videoCreator/index',
     'pages/home/index',
-    'pages/index/index',
+    'pages/videoCreator/index',
     'pages/login/index',
     'pages/voiceprint/index',
     'pages/player/index',

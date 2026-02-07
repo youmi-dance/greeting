@@ -53,9 +53,6 @@ const VideoCreator: React.FC = () => {
   return (
     <View className='video-creator'>
       <View className='content'>
-
-        <View className='bg-decorator' />
-
         <ScrollView
           scrollY
           enhanced
@@ -108,13 +105,12 @@ const VideoCreator: React.FC = () => {
             >
               开启智能生成
             </Button>
-            {/* 增加一点底部间距，防止离 Tabbar 太近 */}
-            <View className='bottom-spacer' />
           </View>
         </ScrollView>
       </View>
 
       <CustomTabBar />
+      <View className='bg-decorator' />
     </View>
   );
 };

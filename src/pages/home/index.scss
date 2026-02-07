@@ -1,15 +1,57 @@
-.home {
+.home-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f8f9fa;
 
   .content {
     flex: 1;
-    overflow-y: hidden;
+    overflow: hidden;
 
-    .scroll-view {
+    .scroll-container {
       height: 100%;
-      overflow: hidden;
+
+      .title {
+        padding: 60rpx 32rpx 40rpx;
+        .main-title {
+          font-size: 52rpx;
+          font-weight: 800;
+          color: #1c1c1e;
+        }
+        .sub-title {
+          font-size: 24rpx;
+          color: #a1a1a6;
+          margin-top: 8rpx;
+        }
+      }
+
+      .video-grid {
+        //padding: 0 24rpx;
+        background: transparent;
+
+        // 核心：强制重置 NutUI Item 的内边距
+        .nut-grid-item__content {
+          //padding: 0;
+          //background: transparent;
+          //box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.08); // 给竖屏卡片一点悬浮感
+          //overflow: hidden;
+          //display: flex;
+        }
+      }
+
+      .video-card {
+        // 这里可以定义卡片的宽高比，防止图片加载前的闪烁
+        min-height: 150px;
+      }
+
     }
+  }
+
+  .header-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 350rpx;
+    background: linear-gradient(180deg, rgba(250, 44, 25, 0.05) 0%, rgba(248, 249, 250, 0) 100%);
+    pointer-events: none;
   }
 }
