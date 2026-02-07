@@ -1,16 +1,16 @@
 export default defineAppConfig({
   pages: [
+    'pages/voiceCollector/index',
+    'pages/player/index',
     'pages/home/index',
     'pages/videoCreator/index',
-    'pages/login/index',
-    'pages/voiceprint/index',
-    'pages/player/index',
     'pages/mine/index',
+    // 'pages/login/index',
   ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'WeChat',
+    navigationBarTitleText: '悠米祝福',
     navigationBarTextStyle: 'black'
   },
   tabBar: {
