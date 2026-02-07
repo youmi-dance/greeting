@@ -11,9 +11,7 @@ function Mine() {// const [visible, setVisible] = useState(false)
       <View className='content'>
         我的
       </View>
-      <View className='tab-bar'>
-        <CustomTabBar />
-      </View>
+      <CustomTabBar />
     </View>
   )
 }
