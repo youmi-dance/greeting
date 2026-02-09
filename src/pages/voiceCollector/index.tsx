@@ -120,19 +120,26 @@ const VoiceRecord: React.FC = () => {
       const ext = '.' + filePath.split('.').pop();
       const cloudPath = `uploads/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
 
-      const res = Taro.cloud.uploadFile({
+      // 上传采集的音频到微信云
+      Taro.cloud.uploadFile({
         cloudPath: cloudPath,
         filePath: filePath,
         success: (response) => {
           Taro.showToast({ title: '录制成功', icon: 'success' });
           setTimeout(() => setDuration(0), 1000);
           // 上传后返回的文件【临时]url
-          console.log("上传采集声音的url: " + getTempFileUrl(response.fileID));
+          const audioUrl = getTempFileUrl(response.fileID);
+          console.log('上传采集声音的url: ' + audioUrl);
+
+          // 调用千问接口创建音色
+          cloneVoice(audioUrl);
+
         },
         fail: err => {
           console.log(err);
         }
       });
+
 
     } catch (error) {
       console.error('上传出错:', error);
@@ -142,8 +149,38 @@ const VoiceRecord: React.FC = () => {
 
   };
 
+  // 克隆音色并获取voice_id
+  const cloneVoice = async (audioUrl) => {
+    const response = await Taro.request({
+      url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
+      method: 'POST',
+      data: {
+        model: 'voice-enrollment',
+        input: {
+          action: 'create_voice',
+          target_model: 'cosyvoice-v3-plus',
+          prefix: 'testvoice',
+          url: audioUrl,
+          language_hints: ['zh']
+          }
+      },
+      header: {
+        'Content-type': 'application/json',
+        'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
+      },
+      success: (res) => {
+        console.log('请求成功 res: ' + res.statusCode);
+        console.log('res: ' + JSON.stringify(res));
+      },
+      fail: (res) => {
+        console.log('请求失败 res: ' + res.errMsg);
+      }
+    })
+
+  }
+
   // 获取上传文件的临时链接
-  function getTempFileUrl = async (fileID) => {
+  const getTempFileUrl = async (fileID) => {
     try {
       const res = await Taro.cloud.getTempFileURL({
         fileList: [fileID]
