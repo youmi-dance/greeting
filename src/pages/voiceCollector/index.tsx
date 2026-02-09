@@ -150,6 +150,7 @@ const VoiceRecord: React.FC = () => {
   };
 
   // 克隆音色并获取voice_id
+  // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
   const cloneVoice = async (audioUrl) => {
     const response = await Taro.request({
       url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
