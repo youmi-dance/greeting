@@ -143,7 +143,7 @@ const VoiceRecord: React.FC = () => {
   };
 
   // 获取上传文件的临时链接
-  function getTempFileUrl = async (fileID) => {
+  const getTempFileUrl = async (fileID) => {
     try {
       const res = await Taro.cloud.getTempFileURL({
         fileList: [fileID]
