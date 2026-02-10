@@ -5,6 +5,4 @@ deploy_versions/
 node_modules/
 .DS_Store
 .swc
-.idea
-yarn.lock
-.gitignore
+.idea/

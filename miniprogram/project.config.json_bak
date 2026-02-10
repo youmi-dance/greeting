@@ -1,8 +1,8 @@
 {
-  "miniprogramRoot": "miniprogram/dist/",
-  "cloudfunctionRoot": "cloudfunctions/",
+  "miniprogramRoot": "dist/",
+  "cloudfunctionRoot": "faas/",
   "projectname": "greeting",
-  "description": "",
+  "description": "A WeChat mini program for sending greeting.",
   "appid": "wx2ab04daab467a6b3",
   "setting": {
     "urlCheck": true,
@@ -10,7 +10,14 @@
     "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
+    "preloadBackgroundData": false,
     "minified": false,
+    "newFeature": true,
+    "autoAudits": false,
+    "coverView": true,
+    "showShadowRootInWxmlPanel": false,
+    "scopeDataCheck": false,
+    "useCompilerModule": false,
     "compileWorklet": false,
     "uglifyFileName": false,
     "uploadWithSourceMap": true,
@@ -31,11 +38,13 @@
     }
   },
   "compileType": "miniprogram",
+  "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
+  "condition": {},
   "packOptions": {
     "ignore": [],
     "include": []
   },
   "editorSetting": {},
-  "libVersion": "3.14.2"
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }
