@@ -1,0 +1,82 @@
+.video-creator {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f9fc;
+  position: relative;
+
+  .content {
+    flex: 1;
+    overflow-y: hidden;
+
+    .bg-decorator {
+      position: absolute;
+      top: -100rpx;
+      right: -100rpx;
+      width: 450rpx;
+      height: 450rpx;
+      background: radial-gradient(circle, rgba(250, 44, 25, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .content-flow {
+      //flex: 1;
+      overflow: hidden;
+      height: 100%;
+      padding: 60rpx 40rpx 0; // 底部留白交给间距组件
+      box-sizing: border-box;
+
+      .header-section {
+        margin-bottom: 50rpx;
+        .main-title { font-size: 52rpx; font-weight: 800; color: #1c1c1e; }
+        .sub-title { font-size: 26rpx; color: #8e8e93; margin-top: 10rpx; }
+      }
+
+      .glass-card {
+        background: #ffffff;
+        border-radius: 36rpx;
+        padding: 40rpx;
+        margin-bottom: 40rpx;
+        border: 1px solid #efefef;
+        box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.03);
+
+        .card-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 30rpx;
+          .indicator {
+            width: 8rpx; height: 32rpx;
+            background: linear-gradient(to bottom, #fa2c19, #fa6419);
+            border-radius: 4rpx; margin-right: 20rpx;
+          }
+          .label { font-size: 30rpx; font-weight: bold; color: #333; }
+        }
+      }
+
+      // 按钮在滚动区内的样式
+      .btn-container {
+        .nut-button.custom-gradient-btn {
+          height: 100rpx;
+          background: linear-gradient(135deg, #fa2c19 0%, #fa6419 100%) !important;
+          border: none;
+          border-radius: 50rpx;
+          box-shadow: 0 12rpx 24rpx rgba(250, 44, 25, 0.2);
+          font-size: 30rpx;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .uploader {
+      //width: 300rpx;
+      //height: 260rpx;
+    }
+
+    .custom-textarea {
+      height: 200rpx;
+      background: #f6f6f6;
+      //border-radius: 20rpx;
+      padding: 24rpx;
+    }
+  }
+}

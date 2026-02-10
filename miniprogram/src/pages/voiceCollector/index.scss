@@ -1,0 +1,112 @@
+.voice-collector {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 140rpx 0 60rpx;
+  box-sizing: border-box;
+
+  .header-area {
+    text-align: center;
+    .title { font-size: 56rpx; font-weight: 800; color: #1c1c1e; }
+    .subtitle { font-size: 28rpx; color: #8e8e93; margin-top: 16rpx; }
+  }
+
+  .main-control {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .center-anchor {
+      position: relative;
+      width: 320rpx;
+      height: 320rpx;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .breath-ripple {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgba(250, 44, 25, 0.1);
+        animation: rippleScale 2s infinite ease-out;
+        pointer-events: none;
+      }
+
+      .progress-ring {
+        position: absolute;
+        width: 260rpx;
+        height: 260rpx;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+        // 让环形变化更平滑
+        transition: background 0.2s linear;
+
+        .mic-trigger {
+          width: 234rpx;
+          height: 234rpx;
+          background: #fff;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
+          transition: transform 0.1s ease;
+          -webkit-touch-callout: none;
+          user-select: none;
+
+          &.is-active {
+            transform: scale(0.9);
+          }
+
+          .gradient-core {
+            width: 180rpx;
+            height: 180rpx;
+            background: linear-gradient(135deg, #fa2c19 0%, #fa6419 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+    }
+
+    .info-text {
+      margin-top: 100rpx;
+      text-align: center;
+      .timer {
+        font-size: 40rpx;
+        font-weight: 700;
+        color: #1c1c1e;
+        height: 48rpx;
+        line-height: 48rpx;
+        &.recording { color: #fa2c19; }
+      }
+      .guide {
+        font-size: 24rpx;
+        color: #c7c7cc;
+        margin-top: 12rpx;
+      }
+    }
+  }
+
+  .bottom-notice {
+    font-size: 22rpx;
+    color: #e0e0e0;
+    text-align: center;
+  }
+}
+
+@keyframes rippleScale {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}

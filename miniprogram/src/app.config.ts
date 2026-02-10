@@ -1,12 +1,24 @@
-export default {
+export default defineAppConfig({
   pages: [
-    'pages/index/index'
+    'pages/home/index',
+    'pages/player/index',
+    'pages/voiceCollector/index',
+    'pages/videoCreator/index',
+    'pages/mine/index',
+    // 'pages/login/index',
   ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'WeChat',
+    navigationBarTitleText: '悠米祝福',
     navigationBarTextStyle: 'black'
   },
-  cloud: true
-}
+  tabBar: {
+    custom: true,
+    list: [
+      { pagePath: 'pages/home/index', text: '首页' },
+      { pagePath: 'pages/videoCreator/index', text: '创作' },
+      { pagePath: 'pages/mine/index', text: '我的' }
+    ],
+  }
+});

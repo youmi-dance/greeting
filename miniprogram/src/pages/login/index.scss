@@ -1,0 +1,64 @@
+// src/pages/login/login.scss
+// 登录页整体容器
+.login-page {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120rpx;
+  box-sizing: border-box;
+
+  // 微信图标
+  .wx-icon {
+    width: 160rpx;
+    height: 160rpx;
+    margin-bottom: 60rpx;
+    background-color: #07c160;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 80rpx;
+  }
+
+  // 登录提示
+  .login-tip {
+    font-size: 32rpx;
+    color: #333;
+    margin-bottom: 80rpx;
+  }
+
+  // 微信一键登录按钮（核心）
+  .wx-login-btn {
+    width: 670rpx;
+    height: 96rpx;
+    line-height: 96rpx;
+    background-color: #07c160;
+    color: #fff;
+    font-size: 36rpx;
+    border-radius: 48rpx;
+    text-align: center;
+    margin-bottom: 120rpx;
+  }
+
+  // 禁用的登录按钮
+  .wx-login-btn-disabled {
+    background-color: #ccc;
+  }
+
+  // 底部用户协议（小程序提审必备）
+  .protocol {
+    font-size: 24rpx;
+    color: #666;
+    text-align: center;
+    padding: 0 40rpx;
+    line-height: 40rpx;
+
+    a {
+      color: #07c160;
+      text-decoration: none;
+    }
+  }
+}
