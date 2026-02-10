@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { Grid, GridItem, Image, FixedNav } from '@nutui/nutui-react-taro'
+import { Grid, GridItem, Image, FixedNav, Button } from '@nutui/nutui-react-taro'
 import CustomTabBar from '../../components/CustomTabBar'
 import './index.scss'
 
@@ -44,6 +44,7 @@ function Home() {
 
   const renderList = () => {
     const list = Array(17).fill(imgSrc)
+
     return (
       <Grid columns={2} gap={10} className='video-grid'>
         {
@@ -65,14 +66,13 @@ function Home() {
 
   return (
     <View className='home-page'>
-
       <View className='content'>
         <ScrollView className='scroll-container' scrollY enhanced showScrollbar={false}>
           <View className='title'>
             <View className='main-title'>我的祝福</View>
             <View className='sub-title'>记录每一个温暖瞬间</View>
           </View>
-
+          <Button>12323</Button>
           {renderList()}
         </ScrollView>
       </View>
