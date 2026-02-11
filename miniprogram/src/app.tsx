@@ -15,9 +15,19 @@ function App(props: React.PropsWithChildren) {
       traceUser: true, // 记录用户访问
     })
 
-    // 登录
+    // 登录，记录用户信息
     const { code } = await Taro.login()
-    console.log('~~~~~~~ code', code);
+    try {
+      await Taro.cloud.callFunction({
+        name: 'login',
+        data: {
+          code,
+        }
+      })
+    } catch (err) {
+      await Taro.showToast({ title: '登录失败', icon: 'error' });
+      console.error('login error', err)
+    }
   });
 
   // 对应 onShow
