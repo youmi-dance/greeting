@@ -128,11 +128,17 @@ const VoiceRecord: React.FC = () => {
           Taro.showToast({ title: '录制成功', icon: 'success' });
           setTimeout(() => setDuration(0), 1000);
           // 上传后返回的文件【临时]url
-          const audioUrl = getTempFileUrl(response.fileID);
-          console.log('上传采集声音的url: ' + audioUrl);
+          //const audioUrl = getTempFileUrl(response.fileID);
+          //console.log('上传采集声音的url: ' + audioUrl);
 
           // 调用千问接口创建音色
-          cloneVoice(audioUrl);
+         //cloneVoice(audioUrl);        
+
+          getTempFileUrl(response.fileID).then((res) => {
+            console.log('上传采集声音的url: ' + res);
+            // 调用千问接口创建音色
+            cloneVoice(res);    
+          });
 
         },
         fail: err => {
@@ -167,11 +173,22 @@ const VoiceRecord: React.FC = () => {
       },
       header: {
         'Content-type': 'application/json',
+        // sk-b9e99c3d10504180bea3ef1edc4989af
         'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
       },
       success: (res) => {
         console.log('请求成功 res: ' + res.statusCode);
-        console.log('res: ' + JSON.stringify(res));
+        // console.log('res: ' + JSON.stringify(res));
+        console.log('voice_id: ' + res.data.output.voice_id);
+
+        // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
+        Taro.cloud.database().collection('user_voice').add({
+            data: {
+                user_id: '123456',
+                voice_id: res.data.output.voice_id,
+                gmt_create: Date.now()
+            }
+        });
       },
       fail: (res) => {
         console.log('请求失败 res: ' + res.errMsg);

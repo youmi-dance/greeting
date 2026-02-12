@@ -10,6 +10,9 @@ const VideoCreator: React.FC = () => {
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [duration, setDuration] = useState(0);
+
+
   const handleUploadChange = (data: { fileList: any[] }) => {
     setCurrentFiles(data.fileList);
   };
@@ -30,6 +33,102 @@ const VideoCreator: React.FC = () => {
     try {
       const file = currentFiles[0];
       const imageUrl = file?.url || file?.tempFilePath;
+      
+      // step 1 先把图片上传到腾讯云
+      // todo：回头把这个图片上传，和前面的音频上传抽成同一个函数@智珏
+
+      // 文件后缀
+      const ext = '.' + imageUrl.split('.').pop();
+      const cloudPath = `uploads/images/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
+
+      // 上传图片到微信云
+      Taro.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: imageUrl,
+        success: (response) => {
+            Taro.showToast({ title: '上传成功', icon: 'success' });
+            setTimeout(() => setDuration(0), 1000);
+
+            const res = Taro.cloud.getTempFileURL({
+                fileList: [response.fileID]
+            }).then((res) => {
+                const publicImagUrl = res.fileList[0].tempFileURL;
+                console.log('uploaded public image url: ' + publicImagUrl);
+
+                // 查询当前用户的voice_id
+                const voiceId = Taro.cloud.database().collection('user_voice')
+                    .where({
+                        'user_id': '123456'
+                    }).get().then((res) => {
+                       const voiceId = res.data[0].voice_id;
+                       console.log('voiceId: ' + voiceId);
+
+                // step 2：根据祝福文本+之前的音色，调用大模型合成声音
+                // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
+                /**
+                 * input: 
+                 *  voice_id: voiceId
+                 *  text:  blessingText
+                 * 
+                 * ouput: 
+                 *  audioPublicUrl
+                 */
+
+
+                // step 3：再调千问最后合成
+                /**
+                 * image: publicImagUrl
+                 * audio: todo, step 2生成的音频微信云公网地址
+                 *
+                 */
+                console.log('text: ' + blessingText + ' voiceId: ' + voiceId + ' imageUrl: ' + publicImagUrl);
+                const synthesisResponse = Taro.request({
+                    url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis',
+                    method: 'POST',
+                    data: {
+                      model: 'wan2.6-i2v-flash',
+                      input: {
+                        // prompt: '',
+                        image_url: publicImagUrl,
+                        audio_url: ,
+                        url: audioUrl,
+                        language_hints: ['zh']
+                        }
+                    },
+                    header: {
+                      'Content-type': 'application/json',
+                      'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
+                      'X-DashScope-Async': true
+                    },
+                    success: (res) => {
+                      console.log('请求成功 res: ' + res.statusCode);
+                      console.log('res: ' + JSON.stringify(res));
+                      console.log('voice_id: ' + res.data.output.task_id);
+              
+                      // 持久化合成的任务id
+                      Taro.cloud.database().collection('user_task').add({
+                          data: {
+                              user_id: '123456',
+                              task_id: res.data.output.task_id,
+                              task_type: 'synthesis',
+                              request_id: res.data.output.request_id,
+                              gmt_create: Date.now()
+                          }
+                      });
+                    }
+                  })
+
+
+                    });
+
+            });
+
+        },
+        fail: err => {
+          console.log(err);
+        }
+      });
+
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       Taro.hideLoading();
@@ -73,7 +172,7 @@ const VideoCreator: React.FC = () => {
             <Uploader
               className='uploader'
               url='YOUR_SERVER_URL'
-              // onChange={handleUploadChange}
+              onChange={handleUploadChange}
               // onDelete={handleUploadChange}
             />
           </View>
