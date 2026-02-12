@@ -6,10 +6,10 @@ import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import './index.scss';
 
-const db = Taro.cloud.database()
 const recorderManager = Taro.getRecorderManager();
 
 const VoiceRecord: React.FC = () => {
+  const db = Taro.cloud.database()
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
 
@@ -49,16 +49,23 @@ const VoiceRecord: React.FC = () => {
         type: 'loading',
       })
 
-      const fileId = await uploadVoiceFile(tempFilePath);
-      const fileTempURL = await getVoiceFileTempURLByFileId(fileId)
-      // 调用千问接口创建音色
-      await fetchModelToCreateVoice(fileTempURL, fileId);
-
-      Toast.show('commonToast', {
-        content: '语音解析成功',
-        position: 'bottom',
-        type: 'success',
-      })
+      try {
+        const fileId = await uploadVoiceFile(tempFilePath);
+        const fileTempURL = await getVoiceFileTempURLByFileId(fileId)
+        // 调用千问接口创建音色
+        await fetchModelToCreateVoice(fileTempURL, fileId);
+        Toast.show('commonToast', {
+          content: '语音解析成功',
+          position: 'bottom',
+          type: 'success',
+        })
+      } catch(err) {
+        Toast.show('commonToast', {
+          content: '语音解析失败，请重试',
+          position: 'bottom',
+          type: 'fail',
+        })
+      }
     });
 
     recorderManager.onError((err) => {
@@ -91,7 +98,7 @@ const VoiceRecord: React.FC = () => {
       return response.fileID
     } catch (error) {
       console.error('上传出错:', error);
-      return ''
+      throw error;
     }
   };
 
@@ -118,7 +125,7 @@ const VoiceRecord: React.FC = () => {
           'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
         },
       })
-      // console.log('~~~~~~~ fetchModelToCreateVoice res =>', res);
+      console.log('~~~~~~~ fetchModelToCreateVoice res =>', res);
 
       // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
       await db.collection('user_voice').add({
@@ -130,6 +137,7 @@ const VoiceRecord: React.FC = () => {
       })
     } catch (err) {
       console.error(err);
+      throw err;
     }
   }
 
@@ -143,7 +151,7 @@ const VoiceRecord: React.FC = () => {
       return res.fileList?.[0]?.tempFileURL;
     } catch (error) {
       console.error('获取临时链接失败:', error)
-      return ''
+      throw error;
     }
   }
 
