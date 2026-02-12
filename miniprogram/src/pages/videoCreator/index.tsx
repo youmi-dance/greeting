@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, ScrollView } from '@tarojs/components';
 import { Uploader, TextArea, Button } from '@nutui/nutui-react-taro';
 import Taro from '@tarojs/taro';
-import CustomTabBar from '../../components/CustomTabBar';
+import CustomTabBar from '@components/CustomTabBar';
 import './index.scss';
 
 const VideoCreator: React.FC = () => {

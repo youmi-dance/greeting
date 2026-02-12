@@ -5,7 +5,6 @@ export default defineAppConfig({
     'pages/voiceCollector/index',
     'pages/videoCreator/index',
     'pages/mine/index',
-    // 'pages/login/index',
   ],
   window: {
     backgroundTextStyle: 'light',
