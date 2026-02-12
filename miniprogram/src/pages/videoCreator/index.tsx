@@ -167,20 +167,18 @@ const VideoCreator: React.FC = () => {
       const file = currentFiles[0];
       const imageUrl = file?.url || file?.tempFilePath;
 
-      // step 1 先把图片上传到腾讯云
-      // todo：回头把这个图片上传，和前面的音频上传抽成同一个函数@智珏
-
       // 文件后缀
       const ext = '.' + imageUrl.split('.').pop();
       const cloudPath = `uploads/images/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
 
       // 获取 voiceId
       const voiceId = await fetchVoiceId()
-      // step 1
+
+      // step1 上传图片到微信云存储，并返回图片公网 URL
       const publicImagUrl = await uploadImageToWxCloud(cloudPath, imageUrl)
-      // step 2
+      // step 2：根据祝福文本+之前的音色，调用大模型合成声音
       await generateAudio()
-      // step 3
+      // step 3：再调千问最后合成视频
       await generateVideo(voiceId, publicImagUrl)
 
       Taro.hideLoading();
