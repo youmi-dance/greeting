@@ -54,6 +54,7 @@
     "@tarojs/runtime": "4.1.11",
     "@tarojs/shared": "4.1.11",
     "@tarojs/taro": "4.1.11",
+    "dayjs": "^1.11.19",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
