@@ -110,7 +110,7 @@ const VideoCreator: React.FC = () => {
                       input: {
                         // prompt: '',
                         image_url: publicImagUrl,
-                        audio_url: ,
+                        audio_url: '',
                         url: audioUrl,
                         language_hints: ['zh']
                         }
