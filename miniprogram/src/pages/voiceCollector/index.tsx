@@ -3,40 +3,62 @@ import { View } from '@tarojs/components';
 import { Toast } from '@nutui/nutui-react-taro';
 import { Microphone } from '@nutui/icons-react-taro';
 import Taro from '@tarojs/taro';
+import dayjs from 'dayjs';
 import './index.scss';
 
+const db = Taro.cloud.database()
 const recorderManager = Taro.getRecorderManager();
 
 const VoiceRecord: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [duration, setDuration] = useState(0);
-  // const [toast, setToast] = useState({ visible: false, msg: '', type: 'text' });
+  const [recordingDuration, setRecordingDuration] = useState(0);
 
   const timerRef = useRef<any>(null);
   const isPressing = useRef(false); // 关键：记录用户当前的物理按压状态
   const MAX_SEC = 60;
 
+
+
   useEffect(() => {
-    Toast.show('commonToast', {
-      content: '录音太短，请长按说话',
-      type: 'error',
-    })
     // 录音停止监听
-    recorderManager.onStop((res) => {
+    recorderManager.onStop(async (res) => {
       stopTimer();
-      const { tempFilePath, duration: actualDuration } = res;
+      const {
+        tempFilePath,
+        duration,
+        // fileSize
+      } = res;
 
       // 只有录音时长超过 1.5s 才视为有效，并清空进度
-      if (actualDuration < 1500) {
+      if (duration < 1500) {
         Toast.show('commonToast', {
           content: '录音太短，请长按采集声音',
-          type: 'error',
+          position: 'bottom',
+          type: 'fail',
         })
-        // setToast({ visible: true, msg: '录音太短，请长按说话', type: 'fail' });
-        setDuration(0);
+        setRecordingDuration(0);
         return;
       }
-      uploadAudioFile(tempFilePath);
+
+      /**
+       * 上传音色文件，并提交到大模型服务处理
+       */
+      Toast.show('commonToast', {
+        content: '语音解析中',
+        position: 'bottom',
+        type: 'loading',
+      })
+
+      const fileId = await uploadVoiceFile(tempFilePath);
+      const fileTempURL = await getVoiceFileTempURLByFileId(fileId)
+      // 调用千问接口创建音色
+      await fetchModelToCreateVoice(fileTempURL, fileId);
+
+      Toast.show('commonToast', {
+        content: '语音解析成功',
+        position: 'bottom',
+        type: 'success',
+      })
     });
 
     recorderManager.onError((err) => {
@@ -44,13 +66,86 @@ const VoiceRecord: React.FC = () => {
       handleRecBtnTouchEnd();
       Toast.show('commonToast', {
         content: '录音失败，请重试',
-        type: 'error',
+        type: 'fail',
       })
-      // setToast({ visible: true, msg: '录音失败，请重试', type: 'fail' });
     });
 
     return () => stopTimer();
   }, []);
+
+  /**
+   * 上传音色文件到微信云，并返回 fileID
+   * @param filePath
+   */
+  const uploadVoiceFile = async (filePath: string): Promise<string> => {
+    try {
+      // 文件后缀
+      const ext = filePath.split('.').pop();
+      const cloudPath = `voices/${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+
+      // 上传采集的音频到微信云
+      const response = await Taro.cloud.uploadFile({
+        cloudPath,
+        filePath: filePath,
+      });
+      return response.fileID
+    } catch (error) {
+      console.error('上传出错:', error);
+      return ''
+    }
+  };
+
+  // 克隆音色并获取voice_id
+  // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
+  const fetchModelToCreateVoice = async (voiceURL: string, voiceFileId: string) => {
+    try {
+      const res = await Taro.request({
+        url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
+        method: 'POST',
+        data: {
+          model: 'voice-enrollment',
+          input: {
+            action: 'create_voice',
+            target_model: 'cosyvoice-v3-plus',
+            prefix: 'testvoice',
+            url: voiceURL,
+            language_hints: ['zh']
+          }
+        },
+        header: {
+          // 'Content-type': 'application/json',
+          // sk-b9e99c3d10504180bea3ef1edc4989af
+          'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
+        },
+      })
+      // console.log('~~~~~~~ fetchModelToCreateVoice res =>', res);
+
+      // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
+      await db.collection('user_voice').add({
+        data: {
+          voice_id: res.data.output.voice_id,
+          cloud_file_id: voiceFileId,
+          gmt_create: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        }
+      })
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // 获取上传文件的临时链接
+  const getVoiceFileTempURLByFileId = async (fileID): Promise<string> => {
+    try {
+      const res = await Taro.cloud.getTempFileURL({
+        fileList: [fileID]
+      })
+
+      return res.fileList?.[0]?.tempFileURL;
+    } catch (error) {
+      console.error('获取临时链接失败:', error)
+      return ''
+    }
+  }
 
   const stopTimer = () => {
     if (timerRef.current) {
@@ -61,15 +156,15 @@ const VoiceRecord: React.FC = () => {
 
   const startTimer = () => {
     stopTimer();
-    setDuration(0);
+    setRecordingDuration(0);
     let count = 0;
     timerRef.current = setInterval(() => {
       count++;
       if (count >= MAX_SEC) {
-        setDuration(MAX_SEC);
+        setRecordingDuration(MAX_SEC);
         handleRecBtnTouchEnd();
       } else {
-        setDuration(count);
+        setRecordingDuration(count);
       }
     }, 1000);
   };
@@ -87,17 +182,19 @@ const VoiceRecord: React.FC = () => {
       }
     } catch (err) {
       isPressing.current = false;
-      Taro.showModal({
+      const res = await Taro.showModal({
         title: '权限提示',
         content: '需要麦克风权限才能录音',
-        success: (res) => res.confirm && Taro.openSetting()
       });
+      if (res.confirm) {
+        await Taro.openSetting()
+      }
       return;
     }
 
     if (!isPressing.current) return;
 
-    Taro.vibrateShort({ type: 'medium' });
+    await Taro.vibrateShort({ type: 'medium' });
     setIsRecording(true);
     startTimer();
 
@@ -124,118 +221,14 @@ const VoiceRecord: React.FC = () => {
     }
   };
 
-  const uploadAudioFile = async (filePath: string) => {
-    Taro.showToast({ title: '语音解析中...', icon: 'success' });
-    try {
-      // 文件后缀
-      const ext = '.' + filePath.split('.').pop();
-      const cloudPath = `uploads/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
-
-      // 上传采集的音频到微信云
-      Taro.cloud.uploadFile({
-        cloudPath: cloudPath,
-        filePath: filePath,
-        success: (response) => {
-          Taro.showToast({ title: '录制成功', icon: 'success' });
-          setTimeout(() => setDuration(0), 1000);
-          // 上传后返回的文件【临时]url
-          //const audioUrl = getTempFileUrl(response.fileID);
-          //console.log('上传采集声音的url: ' + audioUrl);
-
-          // 调用千问接口创建音色
-          //cloneVoice(audioUrl);
-
-          getTempFileUrl(response.fileID).then((res) => {
-            console.log('上传采集声音的url: ' + res);
-            // 调用千问接口创建音色
-            cloneVoice(res);
-          });
-
-        },
-        fail: err => {
-          console.log(err);
-        }
-      });
 
 
-    } catch (error) {
-      console.error('上传出错:', error);
-    } finally {
-      Taro.hideLoading();
-    }
-
-  };
-
-  // 克隆音色并获取voice_id
-  // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
-  const cloneVoice = async (audioUrl) => {
-    const response = await Taro.request({
-      url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
-      method: 'POST',
-      data: {
-        model: 'voice-enrollment',
-        input: {
-          action: 'create_voice',
-          target_model: 'cosyvoice-v3-plus',
-          prefix: 'testvoice',
-          url: audioUrl,
-          language_hints: ['zh']
-        }
-      },
-      header: {
-        'Content-type': 'application/json',
-        // sk-b9e99c3d10504180bea3ef1edc4989af
-        'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
-      },
-      success: (res) => {
-        console.log('请求成功 res: ' + res.statusCode);
-        // console.log('res: ' + JSON.stringify(res));
-        console.log('voice_id: ' + res.data.output.voice_id);
-
-        // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
-        Taro.cloud.database().collection('user_voice').add({
-          data: {
-            user_id: '123456',
-            voice_id: res.data.output.voice_id,
-            gmt_create: Date.now()
-          }
-        });
-      },
-      fail: (res) => {
-        console.log('请求失败 res: ' + res.errMsg);
-      }
-    })
-
-  }
-
-  // 获取上传文件的临时链接
-  const getTempFileUrl = async (fileID) => {
-    try {
-      const res = await Taro.cloud.getTempFileURL({
-        fileList: [fileID]
-      })
-
-      if (res.fileList && res.fileList[0]) {
-        const url = res.fileList[0].tempFileURL;
-        console.log('url', url);
-        return url;
-      }
-    } catch (error) {
-      console.error('获取临时链接失败:', error)
-    }
-  }
-
-  const progressDeg = (duration / MAX_SEC) * 360;
+  const progressDeg = (recordingDuration / MAX_SEC) * 360;
 
   return (
     <View className='voice-collector'>
-      {/*<Toast*/}
-      {/*  visible={toast.visible}*/}
-      {/*  title={toast.msg}*/}
-      {/*  onClose={() => setToast({ ...toast, visible: false })}*/}
-      {/*/>*/}
-
       <Toast id='commonToast' />
+
       <View className='header-area'>
         <View className='title'>定制 AI 原声</View>
         <View className='subtitle'>录制一段语音，让 AI 学习您的独特嗓音</View>
@@ -269,7 +262,7 @@ const VoiceRecord: React.FC = () => {
 
         <View className='info-text'>
           <View className={`timer ${isRecording ? 'recording' : ''}`}>
-            {isRecording ? `正在录制 ${duration}s` : '按住说话'}
+            {isRecording ? `正在录制 ${recordingDuration}s` : '按住说话'}
           </View>
           <View className='guide'>录制时间越长，AI 还原度越高</View>
         </View>
