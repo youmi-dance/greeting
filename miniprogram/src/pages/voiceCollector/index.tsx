@@ -17,8 +17,6 @@ const VoiceRecord: React.FC = () => {
   const isPressing = useRef(false); // 关键：记录用户当前的物理按压状态
   const MAX_SEC = 60;
 
-
-
   useEffect(() => {
     // 录音停止监听
     recorderManager.onStop(async (res) => {
@@ -207,11 +205,11 @@ const VoiceRecord: React.FC = () => {
     startTimer();
 
     recorderManager.start({
+      format: 'mp3',
       duration: MAX_SEC * 1000,
       sampleRate: 16000,
-      numberOfChannels: 1,
-      encodeBitRate: 96000,
-      format: 'mp3',
+      numberOfChannels: 2,
+      encodeBitRate: 48000,
     });
   };
 
