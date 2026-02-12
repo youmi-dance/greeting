@@ -72,8 +72,27 @@ const VideoCreator: React.FC = () => {
                  * 
                  * ouput: 
                  *  audioPublicUrl
+                 * 
+                 * API: https://dashscope.aliyuncs.com/api/v1/services/aigc/text2audio/text-to-audio
+                 *         {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${this.apiKey}`,
+                                'Content-Type': 'application/json',
+                             },
+                            body: JSON.stringify({
+                             model: this.model,
+                             input: {
+                                  text: text,
+                                  voice: this.voice,
+                                  language_type: this.languageType,
+                                  format: this.format,
+                                  sample_rate: this.sampleRate,
+                                 },
+                            }),
+                            }
                  */
-                
+
 
 
                 // step 3：再调千问最后合成
