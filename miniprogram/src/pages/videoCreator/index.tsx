@@ -165,8 +165,9 @@ const VideoCreator: React.FC = () => {
       const imageUrl = file?.url || file?.tempFilePath;
 
       // 文件后缀
-      const ext = '.' + imageUrl.split('.').pop();
-      const cloudPath = `uploads/images/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
+      const ext = imageUrl.split('.').pop();
+      const cloudPath = `images/${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+      
 
       // 获取 voiceId
       const voiceId = await fetchVoiceId()
