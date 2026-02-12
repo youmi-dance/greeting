@@ -49,10 +49,10 @@ const CustomTabBar = () => {
           title={title}
           value={unreadNum}
           icon={
-            <IconCmp size={18} />
-            }
+            <IconCmp size={22} />
+          }
         />
-        ))}
+      ))}
     </Tabbar>
   )
 }

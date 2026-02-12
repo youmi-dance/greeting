@@ -1,6 +1,6 @@
 // import { useState } from 'react'
 import { View } from '@tarojs/components'
-import CustomTabBar from '../../components/CustomTabBar';
+import CustomTabBar from '@components/CustomTabBar';
 import './index.scss'
 
 

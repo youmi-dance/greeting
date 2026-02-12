@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { View, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { Grid, GridItem, Image, FixedNav } from '@nutui/nutui-react-taro'
-import CustomTabBar from '../../components/CustomTabBar'
+import CustomTabBar from '@/components/CustomTabBar'
+import { VideoList, Video } from '@/types/video';
 import './index.scss'
 
 // 这里的图片建议替换成你真实的竖屏视频封面
@@ -33,7 +34,7 @@ function Home() {
   const change = (value: boolean) => {
     setVisible(value)
   }
-  const selected = (
+  const handleNavSelect = (
     item: any,
     event: React.MouseEvent<Element, MouseEvent>
   ) => {
@@ -42,15 +43,27 @@ function Home() {
   }
 
 
+  const listItemClick = (video: Video) => {
+    Taro.navigateTo({
+      url: `/pages/player/index?videoId=${video.id}`
+    })
+  }
+
   const renderList = () => {
-    const list = Array(17).fill(imgSrc)
+    const list: VideoList = Array(17).fill({
+      coverImageSrc: imgSrc,
+    } as Video)
     return (
       <Grid columns={2} gap={10} className='video-grid'>
         {
-          list.map((src, index) => (
-            <GridItem key={index} className='video-card'>
+          list.map((item, index) => (
+            <GridItem
+              key={index}
+              className='video-card'
+              onClick={() => listItemClick(item)}
+            >
               <Image
-                src={src}
+                src={item.coverImageSrc}
                 mode='aspectFill' // 确保图片铺满容器不变形
                 width='100%'
                 height='180' // 竖屏比例的关键：高度增加
@@ -87,7 +100,7 @@ function Home() {
         position={{ top: '520px' }}
         onChange={change}
         visible={visible}
-        onSelect={selected}
+        onSelect={handleNavSelect}
       />
     </View>
   )
