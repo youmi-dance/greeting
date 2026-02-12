@@ -101,9 +101,9 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     },
     alias: {
       '@': path.resolve(__dirname, '..', 'src'),
-      '@/components': path.resolve(__dirname, '..', 'src/components'),
-      '@/utils': path.resolve(__dirname, '..', 'src/utils'),
-      '@/types': path.resolve(__dirname, '..', 'types'),
+      // '@/components': path.resolve(__dirname, '..', 'src/components'),
+      // '@/utils': path.resolve(__dirname, '..', 'src/utils'),
+      // '@/types': path.resolve(__dirname, '..', 'types'),
     }
   }
   if (process.env.NODE_ENV === 'development') {

@@ -33,7 +33,7 @@ const VideoCreator: React.FC = () => {
     try {
       const file = currentFiles[0];
       const imageUrl = file?.url || file?.tempFilePath;
-      
+
       // step 1 先把图片上传到腾讯云
       // todo：回头把这个图片上传，和前面的音频上传抽成同一个函数@智珏
 
@@ -66,13 +66,13 @@ const VideoCreator: React.FC = () => {
                 // step 2：根据祝福文本+之前的音色，调用大模型合成声音
                 // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
                 /**
-                 * input: 
+                 * input:
                  *  voice_id: voiceId
                  *  text:  blessingText
-                 * 
-                 * ouput: 
+                 *
+                 * ouput:
                  *  audioPublicUrl
-                 * 
+                 *
                  * API: https://dashscope.aliyuncs.com/api/v1/services/aigc/text2audio/text-to-audio
                  *         {
                             method: 'POST',
@@ -111,7 +111,7 @@ const VideoCreator: React.FC = () => {
                         // prompt: '',
                         image_url: publicImagUrl,
                         audio_url: '',
-                        url: audioUrl,
+                        url: 'audioUrl',
                         language_hints: ['zh']
                         }
                     },
@@ -124,7 +124,7 @@ const VideoCreator: React.FC = () => {
                       console.log('请求成功 res: ' + res.statusCode);
                       console.log('res: ' + JSON.stringify(res));
                       console.log('voice_id: ' + res.data.output.task_id);
-              
+
                       // 持久化合成的任务id
                       Taro.cloud.database().collection('user_task').add({
                           data: {

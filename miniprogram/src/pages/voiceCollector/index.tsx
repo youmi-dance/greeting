@@ -132,12 +132,12 @@ const VoiceRecord: React.FC = () => {
           //console.log('上传采集声音的url: ' + audioUrl);
 
           // 调用千问接口创建音色
-         //cloneVoice(audioUrl);        
+         //cloneVoice(audioUrl);
 
           getTempFileUrl(response.fileID).then((res) => {
             console.log('上传采集声音的url: ' + res);
             // 调用千问接口创建音色
-            cloneVoice(res);    
+            cloneVoice(res);
           });
 
         },
@@ -220,7 +220,7 @@ const VoiceRecord: React.FC = () => {
     <View className='voice-collector'>
       <Toast
         visible={toast.visible}
-        msg={toast.msg}
+        content={toast.msg}
         onClose={() => setToast({ ...toast, visible: false })}
       />
 
