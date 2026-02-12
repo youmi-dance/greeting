@@ -10,13 +10,17 @@ const recorderManager = Taro.getRecorderManager();
 const VoiceRecord: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [toast, setToast] = useState({ visible: false, msg: '', type: 'text' });
+  // const [toast, setToast] = useState({ visible: false, msg: '', type: 'text' });
 
   const timerRef = useRef<any>(null);
   const isPressing = useRef(false); // 关键：记录用户当前的物理按压状态
   const MAX_SEC = 60;
 
   useEffect(() => {
+    Toast.show('commonToast', {
+      content: '录音太短，请长按说话',
+      type: 'error',
+    })
     // 录音停止监听
     recorderManager.onStop((res) => {
       stopTimer();
@@ -24,7 +28,11 @@ const VoiceRecord: React.FC = () => {
 
       // 只有录音时长超过 1.5s 才视为有效，并清空进度
       if (actualDuration < 1500) {
-        setToast({ visible: true, msg: '录音太短，请长按说话', type: 'fail' });
+        Toast.show('commonToast', {
+          content: '录音太短，请长按采集声音',
+          type: 'error',
+        })
+        // setToast({ visible: true, msg: '录音太短，请长按说话', type: 'fail' });
         setDuration(0);
         return;
       }
@@ -32,9 +40,13 @@ const VoiceRecord: React.FC = () => {
     });
 
     recorderManager.onError((err) => {
-      console.error('录音机错误:', err);
+      console.error('录音错误:', err);
       handleRecBtnTouchEnd();
-      setToast({ visible: true, msg: '录音失败，请重试', type: 'fail' });
+      Toast.show('commonToast', {
+        content: '录音失败，请重试',
+        type: 'error',
+      })
+      // setToast({ visible: true, msg: '录音失败，请重试', type: 'fail' });
     });
 
     return () => stopTimer();
@@ -83,7 +95,6 @@ const VoiceRecord: React.FC = () => {
       return;
     }
 
-    // 【核心修复】权限检查完后，如果用户已经松手，则直接退出不启动录音
     if (!isPressing.current) return;
 
     Taro.vibrateShort({ type: 'medium' });
@@ -114,7 +125,7 @@ const VoiceRecord: React.FC = () => {
   };
 
   const uploadAudioFile = async (filePath: string) => {
-    Taro.showLoading({ title: '语音解析中...' });
+    Taro.showToast({ title: '语音解析中...', icon: 'success' });
     try {
       // 文件后缀
       const ext = '.' + filePath.split('.').pop();
@@ -132,7 +143,7 @@ const VoiceRecord: React.FC = () => {
           //console.log('上传采集声音的url: ' + audioUrl);
 
           // 调用千问接口创建音色
-         //cloneVoice(audioUrl);
+          //cloneVoice(audioUrl);
 
           getTempFileUrl(response.fileID).then((res) => {
             console.log('上传采集声音的url: ' + res);
@@ -169,7 +180,7 @@ const VoiceRecord: React.FC = () => {
           prefix: 'testvoice',
           url: audioUrl,
           language_hints: ['zh']
-          }
+        }
       },
       header: {
         'Content-type': 'application/json',
@@ -183,11 +194,11 @@ const VoiceRecord: React.FC = () => {
 
         // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
         Taro.cloud.database().collection('user_voice').add({
-            data: {
-                user_id: '123456',
-                voice_id: res.data.output.voice_id,
-                gmt_create: Date.now()
-            }
+          data: {
+            user_id: '123456',
+            voice_id: res.data.output.voice_id,
+            gmt_create: Date.now()
+          }
         });
       },
       fail: (res) => {
@@ -218,12 +229,13 @@ const VoiceRecord: React.FC = () => {
 
   return (
     <View className='voice-collector'>
-      <Toast
-        visible={toast.visible}
-        content={toast.msg}
-        onClose={() => setToast({ ...toast, visible: false })}
-      />
+      {/*<Toast*/}
+      {/*  visible={toast.visible}*/}
+      {/*  title={toast.msg}*/}
+      {/*  onClose={() => setToast({ ...toast, visible: false })}*/}
+      {/*/>*/}
 
+      <Toast id='commonToast' />
       <View className='header-area'>
         <View className='title'>定制 AI 原声</View>
         <View className='subtitle'>录制一段语音，让 AI 学习您的独特嗓音</View>
