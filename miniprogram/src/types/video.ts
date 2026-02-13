@@ -19,12 +19,13 @@ export interface GenerateAudioResponse {
     characters: number
   },
   request_id: string
+  errMsg: string
 }
 
 export interface GenerateVideoResponse {
   request_id: string;
   output:{
     task_id: string;
-    task_status: string;
+    task_status: 'PENDING' | 'SUCCEEDED';
   }
 }

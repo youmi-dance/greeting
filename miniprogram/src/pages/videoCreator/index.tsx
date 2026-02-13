@@ -3,7 +3,7 @@ import { View, ScrollView } from '@tarojs/components';
 import { Uploader, UploaderProps, FileItem, TextArea, Button, Toast } from '@nutui/nutui-react-taro';
 import Taro from '@tarojs/taro';
 import CustomTabBar from '@/components/CustomTabBar';
-import { GenerateAudioResponse, GenerateVideoResponse } from '@/types/video';
+import { GenerateAudioResponse, GenerateVideoResponse, Voice } from '@/types';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -43,7 +43,7 @@ const VideoCreator: React.FC = () => {
         fileList: [fileID]
       })
       const { tempFileURL } = fileURLRes.fileList[0];
-      console.log('uploaded public image url: ' + tempFileURL)
+      // console.log('~~~~~~~ uploadImage => tempFileURL', tempFileURL);
 
       Toast.show('notice', {
         content: '上传成功',
@@ -67,14 +67,12 @@ const VideoCreator: React.FC = () => {
   }
 
   /**
-   * 读取当前用户的 voiceId
+   * 读取当前用户的 voiceData
    */
-  const fetchVoiceId = async (): Promise<string> => {
+  const fetchVoiceData = async (): Promise<Voice> => {
     // 查询当前用户的voice_id
-    const userVoiceRes = await db.collection('user_voice').get()
-    const voiceId = userVoiceRes.data[0].voice_id
-    console.log('voiceId: ' + voiceId)
-    return voiceId
+    const voiceRt = await db.collection('user_voice').get()
+    return voiceRt.data[0] as Voice;
   }
 
   /**
@@ -108,7 +106,7 @@ const VideoCreator: React.FC = () => {
      *
      */
     try {
-      const synthesisVoiceResp = await Taro.request<GenerateAudioResponse>({
+      const res = await Taro.request<GenerateAudioResponse>({
         url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
         method: 'POST',
         data: {
@@ -116,8 +114,8 @@ const VideoCreator: React.FC = () => {
           input: {
             text: text,
             // 先写死这个音色用于联调
-            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9'
             // voice: voiceId,
+            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9'
           }
         },
         header: {
@@ -125,8 +123,8 @@ const VideoCreator: React.FC = () => {
           //'X-DashScope-Async': true
         },
       })
-      console.log('~~~~~~~ synthesisVoiceResp', synthesisVoiceResp);
-      return synthesisVoiceResp;
+      // console.log('~~~~~~~ generateAudio => res', res);
+      return res;
     } catch(err) {
       throw err;
     }
@@ -157,12 +155,10 @@ const VideoCreator: React.FC = () => {
         },
         header: {
           'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
-          'X-DashScope-Async': true
+          'X-DashScope-Async': 'enable'
         },
       })
-      console.log('请求成功 res: ' + res);
-      // console.log('voice_id: ' + res.data.output.task_id);
-
+      console.log('~~~~~~~ generateVideo => res', res);
       return res;
     } catch (err) {
       throw err
@@ -196,7 +192,9 @@ const VideoCreator: React.FC = () => {
 
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
       // 获取 voiceId
-      const voiceId = await fetchVoiceId()
+      const { voice_id: voiceId } = await fetchVoiceData()
+      // console.log('~~~~~~~ voiceId', voiceId)
+
       const audioRes = await generateAudio(blessingText, voiceId)
 
       const audioURL = audioRes.data.output.audio.url
@@ -212,13 +210,14 @@ const VideoCreator: React.FC = () => {
         request_id,
       } = videoRes.data
 
-      // 持久化合成的任务id
-      const rt = await db.collection('user_task').add({
+      // 持久化合成的任务信息
+      await db.collection('user_task').add({
         data: {
           task_id,
           task_status,
           request_id,
           image_file_id: fileId,
+          text: blessingText,
           gmt_create: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         }
       });
@@ -226,12 +225,14 @@ const VideoCreator: React.FC = () => {
       // Taro.hideLoading();
       const modalRes = await Taro.showModal({
         title: '生成成功',
-        content: '您的祝福视频已准备就绪',
+        content: '您的祝福视频生成任务已创建，大概需要等待1-2分钟',
         confirmText: '去查看',
         showCancel: false,
       });
       if (modalRes.confirm) {
-        Taro.navigateTo({ url: '/pages/preview/index' });
+        await Taro.navigateTo({
+          url: '/pages/home/index',
+        });
       }
     } catch (err) {
       // Taro.hideLoading();
