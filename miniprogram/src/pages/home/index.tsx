@@ -6,39 +6,40 @@ import CustomTabBar from '@/components/CustomTabBar'
 import { VideoList, Video } from '@/types/video';
 import './index.scss'
 
-// 这里的图片建议替换成你真实的竖屏视频封面
-const imgSrc = 'https://m.360buyimg.com/babel/jfs/t1/36973/29/11270/120042/5cf1fe3cEac2b5898/10c2722d0cc0bfa7.png'
+const debugList = [
+  {
+    id: 1,
+    text: '首页',
+    icon: '',
+    path: 'pages/home/index'
+  },
+  {
+    id: 2,
+    text: '声纹采集',
+    icon: '',
+    path: 'pages/voiceCollector/index'
+  },
+  {
+    id: 3,
+    text: '播放页',
+    icon: '',
+    path: 'pages/player/index'
+  },
+]
 
 function Home() {
   const db = Taro.cloud.database()
   const [videoList, setVideoList] = useState<VideoList>([])
 
   useLoad(async () => {
-    const userTaskRt = await db.collection('user_task').get()
-    console.log('~~~~~~~ taskList', userTaskRt);
+    const userTaskRt = await db.collection('user_task')
+      .where({
+        task_status: 'SUCCEEDED'
+      })
+      .get()
     setVideoList(userTaskRt.data as VideoList);
   })
 
-  const debugList = [
-    {
-      id: 1,
-      text: '首页',
-      icon: '',
-      path: 'pages/home/index'
-    },
-    {
-      id: 2,
-      text: '声纹采集',
-      icon: '',
-      path: 'pages/voiceCollector/index'
-    },
-    {
-      id: 3,
-      text: '播放页',
-      icon: '',
-      path: 'pages/player/index'
-    },
-  ]
   const [visible, setVisible] = useState(false)
   const change = (value: boolean) => {
     setVisible(value)
@@ -54,25 +55,22 @@ function Home() {
 
   const listItemClick = (video: Video) => {
     Taro.navigateTo({
-      url: `/pages/player/index?videoId=${video.id}`
+      url: `/pages/player/index?videoId=${video._id}`
     })
   }
 
   const renderList = () => {
-    const list: VideoList = Array(17).fill({
-      coverImageSrc: imgSrc,
-    } as Video)
     return (
       <Grid columns={2} gap={10} className='video-grid'>
         {
-          list.map((item, index) => (
+          videoList.map((item, index) => (
             <GridItem
               key={index}
               className='video-card'
               onClick={() => listItemClick(item)}
             >
               <Image
-                src={item.coverImageSrc}
+                src={item.image_file_id}
                 mode='aspectFill' // 确保图片铺满容器不变形
                 width='100%'
                 height='180' // 竖屏比例的关键：高度增加
