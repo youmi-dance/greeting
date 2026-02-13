@@ -114,8 +114,8 @@ const VideoCreator: React.FC = () => {
           input: {
             text: text,
             // 先写死这个音色用于联调
-            // voice: voiceId,
-            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9'
+            voice: voiceId,
+            // voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9'
           }
         },
         header: {
