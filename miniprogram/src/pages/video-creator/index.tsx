@@ -13,29 +13,10 @@ interface CloudFileInfo {
 }
 
 const VideoCreator: React.FC = () => {
-  let userVoiceId: string
   const db = Taro.cloud.database()
   const [selectedImage, setSelectedImage] = useState<FileItem>();
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useLoad(async () => {
-    const { voice_id } = await fetchVoiceData()
-    console.log('~~~~~~~ voice_id', voice_id);
-    if (!voice_id) {
-      Toast.show('notice', {
-        content: '未找到声纹，请先采集',
-        position: 'top',
-        type: 'fail',
-      })
-
-      await Taro.redirectTo({
-        url: '/pages/voice-collector/index',
-      })
-      return
-    }
-    userVoiceId = voice_id
-  })
 
   const handleUploadChange: UploaderProps['onChange'] = (files) => {
     if (files.length > 0) {
@@ -142,7 +123,7 @@ const VideoCreator: React.FC = () => {
           //'X-DashScope-Async': true
         },
       })
-      // console.log('~~~~~~~ generateAudio => res', res);
+      console.log('~~~~~~~ generateAudio => res', res);
       return res;
     } catch(err) {
       throw err;
@@ -209,8 +190,13 @@ const VideoCreator: React.FC = () => {
       // step1 上传图片到微信云存储，并返回图片公网 URL
       const { tempFileURL: imageTempURL, fileId } = await uploadImageToWxCloud()
 
+      // 获取 voiceId
+      const { voice_id: voiceId } = await fetchVoiceData()
+
+      console.log('~~~~~~~ voiceId', voiceId);
+
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
-      const audioRes = await generateAudio(blessingText, userVoiceId)
+      const audioRes = await generateAudio(blessingText, voiceId)
 
       const audioURL = audioRes.data.output.audio.url
       // step 3：再调千问最后合成视频
@@ -241,7 +227,7 @@ const VideoCreator: React.FC = () => {
       const modalRes = await Taro.showModal({
         title: '生成成功',
         content: '您的祝福视频生成任务已创建，大概需要等待1-2分钟',
-        confirmText: '去查看',
+        confirmText: '回首页',
         showCancel: false,
       });
       if (modalRes.confirm) {

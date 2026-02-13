@@ -135,22 +135,35 @@ const VoiceCollector: React.FC = () => {
             preferred_name: 'my_voice',
             audio: {
               data: voiceURL,
-            },
+            }
           }
         },
         header: {
           Authorization: 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
+          'Content-Type': 'application/json',
         },
       })
       console.log('~~~~~~~ fetchModelToCreateVoice res =>', res);
 
+
+      const voiceId = res.data.output.voice;
+      console.log('~~~~~~~ fetchModelToCreateVoice voiceId =>', voiceId);
       // 同步将voice_id存入用户的音色表（当前默认一个用户就一个音色；后续再支持多个）
+
+      if (!voiceId) {
+        console.error('Error on fetchModelToCreateVoice', res.data.message)
+        return;
+      }
       await db.collection('user_voice').add({
         data: {
-          voice_id: res.data.output.voice_id,
+          voice_id: voiceId,
           cloud_file_id: voiceFileId,
           gmt_create: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         }
+      })
+
+      await Taro.switchTab({
+        url: '/pages/video-creator/index',
       })
     } catch (err) {
       console.error(err);

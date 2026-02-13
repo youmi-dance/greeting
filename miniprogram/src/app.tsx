@@ -23,9 +23,13 @@ function App(props: React.PropsWithChildren) {
     if (options.path !== 'pages/player/index') {
       const db = Taro.cloud.database()
       const { data } = await db.collection('user_voice').get()
-      console.log('~~~~~~~ voiceId', data[0]);
+      // console.log('~~~~~~~ voiceId', data[0]);
       if (!data[0]?.voice_id) {  // 没有声纹
-        await Taro.reLaunch({
+        // await Taro.showToast({
+        //   title: '请先采集声纹',
+        //   icon: 'error',
+        // })
+        await Taro.navigateTo({
           url: '/pages/voice-collector/index',
         })
       }

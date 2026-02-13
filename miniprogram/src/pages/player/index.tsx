@@ -13,7 +13,7 @@ const Player: React.FC = () => {
 
   const handleGoCreate = () => {
     Taro.vibrateShort({ type: 'medium' });
-    Taro.navigateTo({ url: '/pages/record/index' });
+    Taro.switchTab({ url: '/pages/video-creator/index' });
   };
 
   return (
