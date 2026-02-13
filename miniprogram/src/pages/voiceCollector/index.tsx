@@ -29,7 +29,7 @@ const VoiceRecord: React.FC = () => {
 
       // 只有录音时长超过 1.5s 才视为有效，并清空进度
       if (duration < 1500) {
-        Toast.show('commonToast', {
+        Toast.show('notice', {
           content: '录音太短，请长按采集声音',
           position: 'bottom',
           type: 'fail',
@@ -41,7 +41,7 @@ const VoiceRecord: React.FC = () => {
       /**
        * 上传音色文件，并提交到大模型服务处理
        */
-      Toast.show('commonToast', {
+      Toast.show('notice', {
         content: '语音解析中',
         position: 'bottom',
         type: 'loading',
@@ -53,13 +53,13 @@ const VoiceRecord: React.FC = () => {
         console.log('file tmpe url: ', fileTempURL);
         // 调用千问接口创建音色
         await fetchModelToCreateVoice(fileTempURL, fileId);
-        Toast.show('commonToast', {
+        Toast.show('notice', {
           content: '语音解析成功',
           position: 'bottom',
           type: 'success',
         })
       } catch(err) {
-        Toast.show('commonToast', {
+        Toast.show('notice', {
           content: '语音解析失败，请重试',
           position: 'bottom',
           type: 'fail',
@@ -70,7 +70,7 @@ const VoiceRecord: React.FC = () => {
     recorderManager.onError((err) => {
       console.error('录音错误:', err);
       handleRecBtnTouchEnd();
-      Toast.show('commonToast', {
+      Toast.show('notice', {
         content: '录音失败，请重试',
         type: 'fail',
       })
@@ -105,23 +105,41 @@ const VoiceRecord: React.FC = () => {
   // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
   const fetchModelToCreateVoice = async (voiceURL: string, voiceFileId: string) => {
     try {
+      // const res = await Taro.request({
+      //   url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
+      //   method: 'POST',
+      //   data: {
+      //     model: 'voice-enrollment',
+      //     input: {
+      //       action: 'create_voice',
+      //       target_model: 'cosyvoice-v3-plus',
+      //       prefix: 'testvoice',
+      //       url: voiceURL,
+      //       language_hints: ['zh']
+      //     }
+      //   },
+      //   header: {
+      //     // 'Content-type': 'application/json',
+      //     // sk-b9e99c3d10504180bea3ef1edc4989af
+      //     'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
+      //   },
+      // })
       const res = await Taro.request({
         url: 'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/customization',
         method: 'POST',
         data: {
-          model: 'voice-enrollment',
+          model: 'qwen-voice-enrollment',
           input: {
-            action: 'create_voice',
-            target_model: 'cosyvoice-v3-plus',
-            prefix: 'testvoice',
-            url: voiceURL,
-            language_hints: ['zh']
+            action: 'create',
+            target_model: 'qwen3-tts-vc-2026-01-22',
+            preferred_name: 'my_voice',
+            audio: {
+              data: voiceURL,
+            },
           }
         },
         header: {
-          // 'Content-type': 'application/json',
-          // sk-b9e99c3d10504180bea3ef1edc4989af
-          'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
+          Authorization: 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
         },
       })
       console.log('~~~~~~~ fetchModelToCreateVoice res =>', res);
@@ -234,7 +252,7 @@ const VoiceRecord: React.FC = () => {
 
   return (
     <View className='voice-collector'>
-      <Toast id='commonToast' />
+      <Toast id='notice' />
 
       <View className='header-area'>
         <View className='title'>定制 AI 原声</View>
