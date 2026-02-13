@@ -21,15 +21,16 @@ const VideoCreator: React.FC = () => {
 
   useLoad(async () => {
     const { voice_id } = await fetchVoiceData()
-    if (!userVoiceId) {
+    console.log('~~~~~~~ voice_id', voice_id);
+    if (!voice_id) {
       Toast.show('notice', {
         content: '未找到声纹，请先采集',
         position: 'top',
         type: 'fail',
       })
 
-      await Taro.navigateTo({
-        url: '/pages/voiceCollector/index',
+      await Taro.redirectTo({
+        url: '/pages/voice-collector/index',
       })
       return
     }

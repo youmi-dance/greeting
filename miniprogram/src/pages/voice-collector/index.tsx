@@ -8,7 +8,7 @@ import './index.scss';
 
 const recorderManager = Taro.getRecorderManager();
 
-const VoiceRecord: React.FC = () => {
+const VoiceCollector: React.FC = () => {
   const db = Taro.cloud.database()
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -300,4 +300,4 @@ const VoiceRecord: React.FC = () => {
   );
 };
 
-export default VoiceRecord;
+export default VoiceCollector;

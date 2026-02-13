@@ -10,7 +10,7 @@ import './index.scss'
  */
 const tabList = [
   { title: '首页', path: '/pages/home/index', IconCmp: HomeIcon, unreadNum: 8 },
-  { title: '创作', path: '/pages/videoCreator/index', IconCmp: AddRectangle },
+  { title: '创作', path: '/pages/video-creator/index', IconCmp: AddRectangle },
   { title: '我的', path: '/pages/mine/index', IconCmp: User }
 ]
 

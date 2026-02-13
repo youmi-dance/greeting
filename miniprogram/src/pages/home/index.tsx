@@ -17,7 +17,7 @@ const debugList = [
     id: 2,
     text: '声纹采集',
     icon: '',
-    path: 'pages/voiceCollector/index'
+    path: 'pages/voice-collector/index'
   },
   {
     id: 3,

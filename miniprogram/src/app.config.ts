@@ -1,8 +1,8 @@
 export default defineAppConfig({
   pages: [
     'pages/home/index',
-    'pages/voiceCollector/index',
-    'pages/videoCreator/index',
+    'pages/voice-collector/index',
+    'pages/video-creator/index',
     'pages/player/index',
     'pages/mine/index',
   ],
@@ -16,7 +16,7 @@ export default defineAppConfig({
     custom: true,
     list: [
       { pagePath: 'pages/home/index', text: '首页' },
-      { pagePath: 'pages/videoCreator/index', text: '创作' },
+      { pagePath: 'pages/video-creator/index', text: '创作' },
       { pagePath: 'pages/mine/index', text: '我的' }
     ],
   }
