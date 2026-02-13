@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "triggers": [
+    {
+      "name": "checkTaskTimer",
+      "type": "timer",
+      "config": "0 * * * * * *"
+    }
+  ]
+}

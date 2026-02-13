@@ -15,7 +15,7 @@ exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
 
   // 查询用户信息是否已经存在
-  const { data: [ userInfo] } = { data: [] } = await userInfoCollection.where({
+  const { data: [ userInfo] } = await userInfoCollection.where({
     open_id: wxContext.OPENID
   }).get();
 

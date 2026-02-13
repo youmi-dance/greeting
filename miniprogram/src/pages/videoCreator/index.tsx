@@ -144,7 +144,7 @@ const VideoCreator: React.FC = () => {
           model: 'wan2.6-i2v-flash',
           input: {
             prompt: '根据提供的图片和语音，合成一个视频，并且嘴型要严格对上',
-            image_url: imageURL,
+            img_url: imageURL,
             audio_url: audioURL,
           },
           parameters: {

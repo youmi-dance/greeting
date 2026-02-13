@@ -26,6 +26,6 @@ export interface GenerateVideoResponse {
   request_id: string;
   output:{
     task_id: string;
-    task_status: 'PENDING' | 'SUCCEEDED';
+    task_status: 'PENDING' | 'SUCCEEDED' | 'FAILED';
   }
 }
