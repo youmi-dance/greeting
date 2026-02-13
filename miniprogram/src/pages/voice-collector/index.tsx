@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { View } from '@tarojs/components';
 import { Toast } from '@nutui/nutui-react-taro';
 import { Microphone } from '@nutui/icons-react-taro';
-import Taro from '@tarojs/taro';
+import Taro, { useLoad } from '@tarojs/taro';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -17,7 +17,7 @@ const VoiceCollector: React.FC = () => {
   const isPressing = useRef(false); // 关键：记录用户当前的物理按压状态
   const MAX_SEC = 60;
 
-  useEffect(() => {
+  useLoad(async () => {
     // 录音停止监听
     recorderManager.onStop(async (res) => {
       stopTimer();
@@ -77,7 +77,7 @@ const VoiceCollector: React.FC = () => {
     });
 
     return () => stopTimer();
-  }, []);
+  });
 
   /**
    * 上传音色文件到微信云，并返回 fileID

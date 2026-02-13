@@ -1,19 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Taro, { useLoad, useShareAppMessage } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import { Video, Button, SafeArea } from '@nutui/nutui-react-taro';
 import { Share, Edit } from '@nutui/icons-react-taro';
-import Taro, { useShareAppMessage } from '@tarojs/taro';
+import * as Types from '@/types';
 import './index.scss';
 
 const Player: React.FC = () => {
+  const db = Taro.cloud.database()
+  const [video, setVideo] = useState<Types.Video>();
+
   useShareAppMessage(() => ({
     title: '看看我用 AI 制作的专属祝福视频',
     path: '/pages/player/index',
   }));
 
-  const handleGoCreate = () => {
-    Taro.vibrateShort({ type: 'medium' });
-    Taro.switchTab({ url: '/pages/video-creator/index' });
+  useLoad(async () => {
+    const routerParams = Taro.getCurrentInstance().router?.params ?? {}
+    const { videoId = '' } = routerParams
+    // console.log('~~~~~~~ videoId', videoId)
+    const { data } = await db.collection('user_task').doc(videoId).get()
+    console.log('~~~~~~~ videoRes', data);
+    setVideo(data);
+  })
+
+  const handleGoCreate = async () => {
+    // Taro.vibrateShort({ type: 'medium' });
+    await Taro.switchTab({ url: '/pages/video-creator/index' })
   };
 
   return (
@@ -23,11 +36,11 @@ const Player: React.FC = () => {
         <View className='video-content'>
           <Video
             source={{
-              src: 'https://your-cdn-url.com/ai-video.mp4',
+              src: video?.video_url ?? '',
               type: 'video/mp4'
             }}
             options={{
-              poster: 'https://your-cdn-url.com/poster.jpg',
+              poster: video?.image_file_id,
               controls: true,
               autoplay: true,
               loop: true

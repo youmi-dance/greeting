@@ -44,11 +44,7 @@ function Home() {
   const change = (value: boolean) => {
     setVisible(value)
   }
-  const handleNavSelect = async (
-    item: any,
-    event: React.MouseEvent<Element, MouseEvent>
-  ) => {
-    console.log(item, event)
+  const handleNavSelect = async (item) => {
     await Taro.navigateTo({ url: `/${item.path}` })
   }
 

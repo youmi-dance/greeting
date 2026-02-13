@@ -9,6 +9,7 @@ export interface Video {
   task_id: string
   task_status: string
   text: string
+  video_url?: string
 }
 
 export type VideoList = Video[]

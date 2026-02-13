@@ -30,10 +30,7 @@ const CustomTabBar = () => {
 
   const handleSwitch = async (value: number) => {
     const targetPath = tabList[value].path
-    // 使用 switchTab 跳转（如果是原生 tabBar 页面）
-    // 或者用 redirectTo（如果你是纯自定义路由）
-    const rs = await Taro.switchTab({ url: targetPath })
-    console.info('switchTab to ', targetPath, rs);
+    await Taro.switchTab({ url: targetPath })
   }
 
   return (
