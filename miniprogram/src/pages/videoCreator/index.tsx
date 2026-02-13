@@ -66,36 +66,40 @@ const VideoCreator: React.FC = () => {
    * @param imageUrl
    */
   const generateAudio = async () => {
-    // https://help.aliyun.com/zh/model-studio/cosyvoice-clone-api
     /**
+     * 根据文档上的python SDK调用反向推测出：https://help.aliyun.com/zh/model-studio/qwen-tts-voice-cloning?spm=a2c4g.11186623.0.0.2502435awD34Xo#f9ba08cd4ewkv
+     * 
+     * =====response======
+     * {"output":{"audio":{"data":"","expires_at":1771004886,"id":"audio_0a255f04-66fb-4394-b497-a3e188f790b9","url":"http://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/1d/13/20260213/5655f9db/7c3e8c27-0ca5-43d0-9453-f44410402f01.wav?Expires=1771004886&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=BczEz9TOPluPUgTnyRaksMpShz4%3D"},"finish_reason":"stop"},"usage":{"characters":87},"request_id":"0a255f04-66fb-4394-b497-a3e188f790b9"}
+     * 
      * input:
      *  voice_id: voiceId
      *  text:  blessingText
      *
      * ouput:
      *  audioPublicUrl
-     *
-     * API: https://dashscope.aliyuncs.com/api/v1/services/aigc/text2audio/text-to-audio
-     *         {
-       method: 'POST',
-       headers: {
-         'Authorization': `Bearer ${this.apiKey}`,
-         'Content-Type': 'application/json',
-       },
-       body: JSON.stringify({
-         model: this.model,
-         input: {
-           text: text,
-           voice: this.voice,
-           language_type: this.languageType,
-           format: this.format,
-           sample_rate: this.sampleRate,
-         },
-       }),
-     }
+     * 
      */
     try {
-      console.log('step2')
+      const synthesisVoiceResp = await Taro.request({
+        url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
+        method: 'POST',
+        data: {
+          model: 'qwen3-tts-vc-2026-01-22',
+          input: {
+            text: blessingText,
+            // 先写死这个音色用于联调
+            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9' 
+          }
+        },
+        header: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
+          //'X-DashScope-Async': true
+        },
+      })
+      console.log('step2 dashscope reponse: ', JSON.stringify(synthesisVoiceResp));
+      return synthesisVoiceResp;
     } catch(err) {
       console.error(err)
       await Taro.showToast({ title: '上传失败', icon: 'error' })
@@ -171,13 +175,13 @@ const VideoCreator: React.FC = () => {
       const ext = '.' + imageUrl.split('.').pop();
       const cloudPath = `uploads/images/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
 
-      // 获取 voiceId
-      const voiceId = await fetchVoiceId()
-
       // step1 上传图片到微信云存储，并返回图片公网 URL
       const publicImagUrl = await uploadImageToWxCloud(cloudPath, imageUrl)
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
-      await generateAudio()
+      // 获取 voiceId
+      const voiceId = await fetchVoiceId()
+      const res = await generateAudio()
+      const synthesisAudioUrl = res?.data.output.audio.url;
       // step 3：再调千问最后合成视频
       await generateVideo(voiceId, publicImagUrl)
 

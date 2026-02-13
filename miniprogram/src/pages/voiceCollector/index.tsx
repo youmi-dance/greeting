@@ -52,6 +52,7 @@ const VoiceRecord: React.FC = () => {
       try {
         const fileId = await uploadVoiceFile(tempFilePath);
         const fileTempURL = await getVoiceFileTempURLByFileId(fileId)
+        console.log('file tmpe url: ', fileTempURL);
         // 调用千问接口创建音色
         await fetchModelToCreateVoice(fileTempURL, fileId);
         Toast.show('commonToast', {
