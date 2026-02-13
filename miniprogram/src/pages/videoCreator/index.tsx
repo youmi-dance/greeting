@@ -1,48 +1,68 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView } from '@tarojs/components';
-import { Uploader, TextArea, Button } from '@nutui/nutui-react-taro';
+import { Uploader, UploaderProps, FileItem, TextArea, Button, Toast } from '@nutui/nutui-react-taro';
 import Taro from '@tarojs/taro';
-import CustomTabBar from '../../components/CustomTabBar';
+import CustomTabBar from '@/components/CustomTabBar';
+import { GenerateAudioResponse, GenerateVideoResponse } from '@/types/video';
+import dayjs from 'dayjs';
 import './index.scss';
-import {after} from 'node:test';
+
+interface CloudFileInfo {
+  tempFileURL: string;
+  fileId: string;
+}
 
 const VideoCreator: React.FC = () => {
   const db = Taro.cloud.database()
-  const [currentFiles, setCurrentFiles] = useState<any[]>([]);
+  const [selectedImage, setSelectedImage] = useState<FileItem>();
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [duration, setDuration] = useState(0);
-
-
-  const handleUploadChange = (data: { fileList: any[] }) => {
-    setCurrentFiles(data.fileList)
+  const handleUploadChange: UploaderProps['onChange'] = (files) => {
+    if (files.length > 0) {
+      setSelectedImage(files[0])
+    }
   };
 
   /**
    * step1 上传图片到微信云存储，并返回图片公网 URL
-   * @param cloudPath
-   * @param imageUrl
    */
-  const uploadImageToWxCloud = async (cloudPath: string, imageUrl: string): Promise<string> => {
+  const uploadImageToWxCloud = async (): Promise<CloudFileInfo> => {
+    const filePath: string = selectedImage?.path ?? selectedImage?.url ?? '';
+
+    const ext = filePath.split('.').pop();
+    const cloudPath = `images/${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+
     try {
       const { fileID } = await Taro.cloud.uploadFile({
         cloudPath: cloudPath,
-        filePath: imageUrl,
+        filePath: filePath,
       })
-      await Taro.showToast({ title: '上传成功', icon: 'success' })
-      // setTimeout(() => setDuration(0), 1000);
 
       const fileURLRes = await Taro.cloud.getTempFileURL({
         fileList: [fileID]
       })
+      const { tempFileURL } = fileURLRes.fileList[0];
+      console.log('uploaded public image url: ' + tempFileURL)
 
-      const publicImagUrl = fileURLRes.fileList[0].tempFileURL;
-      console.log('uploaded public image url: ' + publicImagUrl)
-      return publicImagUrl;
+      Toast.show('notice', {
+        content: '上传成功',
+        position: 'center',
+        type: 'success',
+      })
+
+      return {
+        fileId: fileID,
+        tempFileURL,
+      };
     } catch(err) {
       console.error(err)
-      await Taro.showToast({ title: '上传失败', icon: 'error' })
+      Toast.show('notice', {
+        content: '上传失败',
+        position: 'center',
+        type: 'fail',
+      })
+      throw err;
     }
   }
 
@@ -59,150 +79,176 @@ const VideoCreator: React.FC = () => {
 
   /**
    * step 2：根据祝福文本+之前的音色，调用大模型合成声音
-   * @param cloudPath
-   * @param imageUrl
    */
-  const generateAudio = async () => {
+  const generateAudio = async (text: string, voiceId: string) => {
     /**
      * 根据文档上的python SDK调用反向推测出：https://help.aliyun.com/zh/model-studio/qwen-tts-voice-cloning?spm=a2c4g.11186623.0.0.2502435awD34Xo#f9ba08cd4ewkv
-     * 
+     *
      * =====response======
-     * {"output":{"audio":{"data":"","expires_at":1771004886,"id":"audio_0a255f04-66fb-4394-b497-a3e188f790b9","url":"http://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/1d/13/20260213/5655f9db/7c3e8c27-0ca5-43d0-9453-f44410402f01.wav?Expires=1771004886&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=BczEz9TOPluPUgTnyRaksMpShz4%3D"},"finish_reason":"stop"},"usage":{"characters":87},"request_id":"0a255f04-66fb-4394-b497-a3e188f790b9"}
-     * 
+     * {
+     *   'output': {
+     *     'audio': {
+     *       'data':'',
+     *       'expires_at':1771004886,
+     *       'id':'audio_0a255f04-66fb-4394-b497-a3e188f790b9',
+     *       'url':'http://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/1d/13/20260213/5655f9db/7c3e8c27-0ca5-43d0-9453-f44410402f01.wav?Expires=1771004886&OSSAccessKeyId=LTAI5tPxpiCM2hjmWrFXrym1&Signature=BczEz9TOPluPUgTnyRaksMpShz4%3D'
+     *     },
+     *     'finish_reason':'stop'
+     *   },
+     *   'usage':{'characters':87},
+     *   'request_id':'0a255f04-66fb-4394-b497-a3e188f790b9'
+     * }
+     *
      * input:
      *  voice_id: voiceId
      *  text:  blessingText
      *
      * ouput:
      *  audioPublicUrl
-     * 
+     *
      */
     try {
-      const synthesisVoiceResp = await Taro.request({
+      const synthesisVoiceResp = await Taro.request<GenerateAudioResponse>({
         url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
         method: 'POST',
         data: {
           model: 'qwen3-tts-vc-2026-01-22',
           input: {
-            text: blessingText,
+            text: text,
             // 先写死这个音色用于联调
-            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9' 
+            voice: 'qwen-tts-vc-my_voice-voice-20260212215658933-9ec9'
+            // voice: voiceId,
           }
         },
         header: {
-          'Content-type': 'application/json',
           'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af'
           //'X-DashScope-Async': true
         },
       })
-      console.log('step2 dashscope reponse: ', JSON.stringify(synthesisVoiceResp));
+      console.log('~~~~~~~ synthesisVoiceResp', synthesisVoiceResp);
       return synthesisVoiceResp;
     } catch(err) {
-      console.error(err)
-      await Taro.showToast({ title: '上传失败', icon: 'error' })
+      throw err;
     }
   }
 
   /**
    * step 3：再调千问最后合成视频
-   * @param voiceId
-   * @param publicImagUrl
+   * @param audioURL
+   * @param imageURL
    */
-  const generateVideo = async (voiceId: string, publicImagUrl: string) => {
-    console.log('step3')
-    /**
-     * image: publicImagUrl
-     * audio: todo, step 2生成的音频微信云公网地址
-     *
-     */
-    console.log('text: ' + blessingText + ' voiceId: ' + voiceId + ' imageUrl: ' + publicImagUrl);
-    const synthesisResponse = await Taro.request({
-      url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis',
-      method: 'POST',
-      data: {
-        model: 'wan2.6-i2v-flash',
-        input: {
-          // prompt: '',
-          image_url: publicImagUrl,
-          audio_url: '',
-          url: 'audioUrl',
-          language_hints: ['zh']
-        }
-      },
-      header: {
-        'Content-type': 'application/json',
-        'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
-        'X-DashScope-Async': true
-      },
-    })
-    console.log('请求成功 res: ' + synthesisResponse.statusCode);
-    console.log('res: ' + JSON.stringify(synthesisResponse));
-    console.log('voice_id: ' + synthesisResponse.data.output.task_id);
+  const generateVideo = async (audioURL: string, imageURL: string) => {
+    try {
+      const res = await Taro.request<GenerateVideoResponse>({
+        url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis',
+        method: 'POST',
+        data: {
+          model: 'wan2.6-i2v-flash',
+          input: {
+            prompt: '根据提供的图片和语音，合成一个视频，并且嘴型要严格对上',
+            image_url: imageURL,
+            audio_url: audioURL,
+          },
+          parameters: {
+            resolution: '720P',
+            prompt_extend: true,
+            duration: 10,
+          },
+        },
+        header: {
+          'Authorization': 'Bearer sk-b9e99c3d10504180bea3ef1edc4989af',
+          'X-DashScope-Async': true
+        },
+      })
+      console.log('请求成功 res: ' + res);
+      // console.log('voice_id: ' + res.data.output.task_id);
 
-    // 持久化合成的任务id
-    db.collection('user_task').add({
-      data: {
-        user_id: '123456',
-        task_id: synthesisResponse.data.output.task_id,
-        task_type: 'synthesis',
-        request_id: synthesisResponse.data.output.request_id,
-        gmt_create: Date.now()
-      }
-    });
+      return res;
+    } catch (err) {
+      throw err
+    }
   }
 
-  const handleGenerate = useCallback(async () => {
-    if (currentFiles.length === 0) {
-      Taro.showToast({ title: '请上传照片', icon: 'none' });
+  const handleGenerate = async () => {
+    if (!selectedImage) {
+      Toast.show('notice', {
+        content: '请选择照片',
+        position: 'center',
+        type: 'fail',
+      })
       return;
     }
     if (!blessingText.trim()) {
-      Taro.showToast({ title: '请输入祝福语', icon: 'none' });
+      Toast.show('notice', {
+        content: '请输入祝福语',
+        position: 'center',
+        type: 'fail',
+      })
       return;
     }
 
     setLoading(true);
-    Taro.showLoading({ title: 'AI 视频生成中', mask: true });
+    // await Taro.showLoading({ title: 'AI 视频生成中', mask: true });
 
     try {
-      const file = currentFiles[0];
-      const imageUrl = file?.url || file?.tempFilePath;
-
-      // 文件后缀
-      const ext = imageUrl.split('.').pop();
-      const cloudPath = `images/${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
-
-
       // step1 上传图片到微信云存储，并返回图片公网 URL
-      const publicImagUrl = await uploadImageToWxCloud(cloudPath, imageUrl)
+      const { tempFileURL: imageTempURL, fileId } = await uploadImageToWxCloud()
+
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
       // 获取 voiceId
       const voiceId = await fetchVoiceId()
-      const res = await generateAudio()
-      const synthesisAudioUrl = res?.data.output.audio.url;
-      // step 3：再调千问最后合成视频
-      await generateVideo(voiceId, publicImagUrl)
+      const audioRes = await generateAudio(blessingText, voiceId)
 
-      Taro.hideLoading();
-      Taro.showModal({
+      const audioURL = audioRes.data.output.audio.url
+      // step 3：再调千问最后合成视频
+      const videoRes = await generateVideo(audioURL, imageTempURL)
+
+      // step 4：存入数据库
+      const {
+        output: {
+          task_status,
+          task_id,
+        },
+        request_id,
+      } = videoRes.data
+
+      // 持久化合成的任务id
+      const rt = await db.collection('user_task').add({
+        data: {
+          task_id,
+          task_status,
+          request_id,
+          image_file_id: fileId,
+          gmt_create: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        }
+      });
+
+      // Taro.hideLoading();
+      const modalRes = await Taro.showModal({
         title: '生成成功',
         content: '您的祝福视频已准备就绪',
         confirmText: '去查看',
         showCancel: false,
-        success: (res) => {
-          if (res.confirm) Taro.navigateTo({ url: '/pages/preview/index' });
-        }
       });
+      if (modalRes.confirm) {
+        Taro.navigateTo({ url: '/pages/preview/index' });
+      }
     } catch (err) {
-      Taro.hideLoading();
-      Taro.showToast({ title: '生成失败', icon: 'error' });
+      // Taro.hideLoading();
+      Toast.show('notice', {
+        content: '生成失败',
+        position: 'center',
+        type: 'fail',
+      })
     } finally {
       setLoading(false);
     }
-  }, [currentFiles, blessingText]);
+  };
 
   return (
     <View className='video-creator'>
+      <Toast id='notice' />
+
       <View className='content'>
         <ScrollView
           scrollY
@@ -223,9 +269,10 @@ const VideoCreator: React.FC = () => {
             </View>
             <Uploader
               className='uploader'
-              url='YOUR_SERVER_URL'
+              autoUpload={false}
               onChange={handleUploadChange}
-              // onDelete={handleUploadChange}
+              mediaType={['image']}
+              sizeType={['compressed']}
             />
           </View>
 
