@@ -184,7 +184,7 @@ const VideoCreator: React.FC = () => {
     }
 
     setLoading(true);
-    // await Taro.showLoading({ title: 'AI 视频生成中', mask: true });
+    await Taro.showLoading({ title: 'AI 视频生成中', mask: true });
 
     try {
       // step1 上传图片到微信云存储，并返回图片公网 URL
@@ -222,7 +222,7 @@ const VideoCreator: React.FC = () => {
         }
       });
 
-      // Taro.hideLoading();
+      Taro.hideLoading();
       const modalRes = await Taro.showModal({
         title: '生成成功',
         content: '您的祝福视频生成任务已创建，大概需要等待1-2分钟',
@@ -230,12 +230,12 @@ const VideoCreator: React.FC = () => {
         showCancel: false,
       });
       if (modalRes.confirm) {
-        await Taro.navigateTo({
+        await Taro.switchTab({
           url: '/pages/home/index',
         });
       }
     } catch (err) {
-      // Taro.hideLoading();
+      Taro.hideLoading();
       Toast.show('notice', {
         content: '生成失败',
         position: 'center',
