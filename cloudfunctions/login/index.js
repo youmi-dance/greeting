@@ -52,7 +52,11 @@ exports.main = async (event, context) => {
 
       return {
         success: true,
-        data: rt,
+        data: {
+          openId: OPENID,
+          appId: APPID,
+          env: ENV,
+        },
       }
     } catch (err) {
       console.error('user-info insert error', err)
@@ -73,7 +77,11 @@ exports.main = async (event, context) => {
 
       return {
         success: true,
-        data: rt,
+        data: {
+          openId: wxContext.OPENID,
+          appId: wxContext.APPID,
+          env: wxContext.ENV,
+        },
       }
     } catch (err) {
       console.error('user-info update error', err)

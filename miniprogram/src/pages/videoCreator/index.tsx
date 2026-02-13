@@ -7,6 +7,7 @@ import './index.scss';
 import {after} from 'node:test';
 
 const VideoCreator: React.FC = () => {
+  const db = Taro.cloud.database()
   const [currentFiles, setCurrentFiles] = useState<any[]>([]);
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,11 +51,7 @@ const VideoCreator: React.FC = () => {
    */
   const fetchVoiceId = async (): Promise<string> => {
     // 查询当前用户的voice_id
-    const userVoiceRes = await Taro.cloud.database().collection('user_voice')
-      .where({
-        'user_id': '123456'
-      })
-      .get()
+    const userVoiceRes = await db.collection('user_voice').get()
     const voiceId = userVoiceRes.data[0].voice_id
     console.log('voiceId: ' + voiceId)
     return voiceId
@@ -143,7 +140,7 @@ const VideoCreator: React.FC = () => {
     console.log('voice_id: ' + synthesisResponse.data.output.task_id);
 
     // 持久化合成的任务id
-    Taro.cloud.database().collection('user_task').add({
+    db.collection('user_task').add({
       data: {
         user_id: '123456',
         task_id: synthesisResponse.data.output.task_id,
@@ -172,8 +169,9 @@ const VideoCreator: React.FC = () => {
       const imageUrl = file?.url || file?.tempFilePath;
 
       // 文件后缀
-      const ext = '.' + imageUrl.split('.').pop();
-      const cloudPath = `uploads/images/${Date.now()}-${Math.floor(Math.random() * 1000)}${ext}`;
+      const ext = imageUrl.split('.').pop();
+      const cloudPath = `images/${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+
 
       // step1 上传图片到微信云存储，并返回图片公网 URL
       const publicImagUrl = await uploadImageToWxCloud(cloudPath, imageUrl)
