@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from '@tarojs/components';
 import { Uploader, UploaderProps, FileItem, TextArea, Button, Toast } from '@nutui/nutui-react-taro';
-import Taro from '@tarojs/taro';
+import Taro, { useLoad } from '@tarojs/taro';
 import CustomTabBar from '@/components/CustomTabBar';
 import { GenerateAudioResponse, GenerateVideoResponse, Voice } from '@/types';
 import dayjs from 'dayjs';
@@ -13,10 +13,28 @@ interface CloudFileInfo {
 }
 
 const VideoCreator: React.FC = () => {
+  let userVoiceId: string
   const db = Taro.cloud.database()
   const [selectedImage, setSelectedImage] = useState<FileItem>();
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useLoad(async () => {
+    const { voice_id } = await fetchVoiceData()
+    if (!userVoiceId) {
+      Toast.show('notice', {
+        content: '未找到声纹，请先采集',
+        position: 'top',
+        type: 'fail',
+      })
+
+      await Taro.navigateTo({
+        url: '/pages/voiceCollector/index',
+      })
+      return
+    }
+    userVoiceId = voice_id
+  })
 
   const handleUploadChange: UploaderProps['onChange'] = (files) => {
     if (files.length > 0) {
@@ -191,11 +209,7 @@ const VideoCreator: React.FC = () => {
       const { tempFileURL: imageTempURL, fileId } = await uploadImageToWxCloud()
 
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
-      // 获取 voiceId
-      const { voice_id: voiceId } = await fetchVoiceData()
-      // console.log('~~~~~~~ voiceId', voiceId)
-
-      const audioRes = await generateAudio(blessingText, voiceId)
+      const audioRes = await generateAudio(blessingText, userVoiceId)
 
       const audioURL = audioRes.data.output.audio.url
       // step 3：再调千问最后合成视频

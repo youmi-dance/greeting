@@ -1,6 +1,14 @@
 export interface Video {
-  id: string
-  coverImageSrc: string
+  _id: string
+  _openid: string
+  error_msg: string
+  gmt_create: string
+  image_file_id: string
+  last_check_time: string
+  request_id: string
+  task_id: string
+  task_status: string
+  text: string
 }
 
 export type VideoList = Video[]

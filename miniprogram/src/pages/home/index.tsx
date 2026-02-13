@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, ScrollView } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useLoad } from '@tarojs/taro'
 import { Grid, GridItem, Image, FixedNav } from '@nutui/nutui-react-taro'
 import CustomTabBar from '@/components/CustomTabBar'
 import { VideoList, Video } from '@/types/video';
@@ -10,6 +10,15 @@ import './index.scss'
 const imgSrc = 'https://m.360buyimg.com/babel/jfs/t1/36973/29/11270/120042/5cf1fe3cEac2b5898/10c2722d0cc0bfa7.png'
 
 function Home() {
+  const db = Taro.cloud.database()
+  const [videoList, setVideoList] = useState<VideoList>([])
+
+  useLoad(async () => {
+    const userTaskRt = await db.collection('user_task').get()
+    console.log('~~~~~~~ taskList', userTaskRt);
+    setVideoList(userTaskRt.data as VideoList);
+  })
+
   const debugList = [
     {
       id: 1,
