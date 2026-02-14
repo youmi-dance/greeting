@@ -18,10 +18,14 @@ const Player: React.FC = () => {
   useLoad(async () => {
     const routerParams = Taro.getCurrentInstance().router?.params ?? {}
     const { videoId = '' } = routerParams
-    // console.log('~~~~~~~ videoId', videoId)
-    const { data } = await db.collection('user_task').doc(videoId).get()
-    console.log('~~~~~~~ videoRes', data);
-    setVideo(data);
+    console.log('~~~~~~~ videoId', videoId)
+    //const { data } = await db.collection('user_task').doc(videoId).get()
+    const {data} = await db.collection('user_task').where({
+      _id: videoId
+    }).get()
+    // todo: 加异常处理
+    console.log('~~~~~~~ videoRes', data[0]);
+    setVideo(data[0]);
   })
 
   const handleGoCreate = async () => {
