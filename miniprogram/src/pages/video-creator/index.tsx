@@ -259,15 +259,15 @@ const VideoCreator: React.FC = () => {
           className='content-flow'
         >
           <View className='header-section'>
-            <View className='main-title'>定制专属视频</View>
-            <View className='sub-title'>上传照片并填写祝福，开启 AI 创作</View>
+            <View className='main-title'>制作你的祝福视频</View>
+            <View className='sub-title'>每一次祝福都值得用心记录</View>
           </View>
 
           {/* 第一步 */}
           <View className='glass-card'>
             <View className='card-header'>
               <View className='indicator' />
-              <View className='label'>第一步：上传照片</View>
+              <View className='label'>第一步：上传你的照片</View>
             </View>
             <Uploader
               className='uploader'
@@ -282,12 +282,12 @@ const VideoCreator: React.FC = () => {
           <View className='glass-card'>
             <View className='card-header'>
               <View className='indicator' />
-              <View className='label'>第二步：文字寄语</View>
+              <View className='label'>第二步：写下你的祝福语</View>
             </View>
             <TextArea
-              placeholder='写下您的美好祝愿...'
+              placeholder='美好祝愿从这里开始...'
               className='custom-textarea'
-              maxLength={30}
+              maxLength={25}
               showCount
               value={blessingText}
               onChange={(v) => setBlessingText(v)}
@@ -302,7 +302,7 @@ const VideoCreator: React.FC = () => {
               loading={loading}
               onClick={handleGenerate}
             >
-              开启智能生成
+              一键生成
             </Button>
           </View>
         </ScrollView>

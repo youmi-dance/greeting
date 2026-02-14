@@ -9,7 +9,7 @@ import './index.scss'
  * 此处配置还对应 src/app.config.js 文件中的 tabBar
  */
 const tabList = [
-  { title: '首页', path: '/pages/home/index', IconCmp: HomeIcon, unreadNum: 8 },
+  { title: '首页', path: '/pages/home/index', IconCmp: HomeIcon, unreadNum: 0 },
   { title: '创作', path: '/pages/video-creator/index', IconCmp: AddRectangle },
   { title: '我的', path: '/pages/mine/index', IconCmp: User }
 ]
