@@ -209,7 +209,12 @@ const VideoCreator: React.FC = () => {
       // step 3：再调千问最后合成视频
       // 预估语音长度，用于后面的视频生成长度
       const duration = estimateVoiceDuration(blessingText);
-      const videoDuration = duration > 10 ? 10 : duration; // 千问最长生成10秒视频
+      const videoDuration = Math.min(Math.max(duration, 2), 15);
+      /**
+       * wan2.6-i2v-flash：取值为[2, 15]之间的整数。默认值为5。
+       * 详见
+       * https://help.aliyun.com/zh/model-studio/image-to-video-api-reference/?spm=a2c4g.11186623.help-menu-2400256.d_2_3_0.324f367djNAHi3&scm=20140722.H_2867393._.OR_help-T_cn~zh-V_1
+       */
       const videoRes = await generateVideo(audioURL, imageTempURL, videoDuration)
 
       // step 4：存入数据库
