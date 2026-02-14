@@ -268,8 +268,8 @@ const VoiceCollector: React.FC = () => {
       <Toast id='notice' />
 
       <View className='header-area'>
-        <View className='title'>定制 AI 原声</View>
-        <View className='subtitle'>录制一段语音，让 AI 学习您的独特嗓音</View>
+        <View className='title'>定制属于你自己的AI原声</View>
+        <View className='subtitle'>录制一段语音，让AI学习你的独特音色</View>
       </View>
 
       <View className='main-control'>
@@ -300,14 +300,13 @@ const VoiceCollector: React.FC = () => {
 
         <View className='info-text'>
           <View className={`timer ${isRecording ? 'recording' : ''}`}>
-            {isRecording ? `正在录制 ${recordingDuration}s` : '按住说话'}
+            {isRecording ? `正在录制 ${recordingDuration}s` : '长按上面话筒说话'}
           </View>
-          <View className='guide'>录制时间越长，AI 还原度越高</View>
+          <View className='guide'>10秒左右，说话清晰；如有失败，可在安静环境下再试。</View>
         </View>
       </View>
 
       <View className='bottom-notice'>
-        请保持环境安静，点击按钮无法录音，需长按
       </View>
     </View>
   );

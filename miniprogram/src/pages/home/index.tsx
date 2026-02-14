@@ -15,13 +15,13 @@ const debugList = [
   },
   {
     id: 2,
-    text: '声纹采集',
+    text: 'AI原声',
     icon: '',
     path: 'pages/voice-collector/index'
   },
   {
     id: 3,
-    text: '播放页',
+    text: '祝福播放',
     icon: '',
     path: 'pages/player/index'
   },

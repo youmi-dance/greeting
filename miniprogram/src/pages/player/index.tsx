@@ -67,8 +67,8 @@ const Player: React.FC = () => {
         </View>
 
         <View className='video-info-box'>
-          <View className='user-name'>@AI 祝福助手</View>
-          <View className='video-topic'>基于您的原声特征实时生成的专属祝福视频</View>
+          <View className='user-name'>@悠米祝福</View>
+          <View className='video-topic'>基于你的独特原声生成的专属祝福视频</View>
           <SafeArea position='bottom' />
         </View>
       </View>
