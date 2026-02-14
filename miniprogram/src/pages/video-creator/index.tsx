@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { View, ScrollView } from '@tarojs/components';
 import { Uploader, UploaderProps, FileItem, TextArea, Button, Toast } from '@nutui/nutui-react-taro';
 import Taro, { useLoad } from '@tarojs/taro';
@@ -165,35 +165,40 @@ const VideoCreator: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    console.log('use effect');
+    // todo：如果用户在分享页面，直接点击【制作同款】，强校验其是否有采集过音色；如果没有需要redirect过去
+  });
+
   const handleGenerate = async () => {
-    if (!selectedImage) {
-      Toast.show('notice', {
-        content: '请选择照片',
-        position: 'center',
-        type: 'fail',
-      })
-      return;
-    }
-    if (!blessingText.trim()) {
-      Toast.show('notice', {
-        content: '请输入祝福语',
-        position: 'center',
-        type: 'fail',
-      })
-      return;
-    }
+
+      if (!selectedImage) {
+        Toast.show('notice', {
+          content: '请选择照片',
+          position: 'center',
+          type: 'fail',
+       })
+        return;
+      }
+     if (!blessingText.trim()) {
+        Toast.show('notice', {
+          content: '请输入祝福语',
+          position: 'center',
+          type: 'fail',
+       })
+       return;
+      }
 
     setLoading(true);
     await Taro.showLoading({ title: 'AI 视频生成中', mask: true });
 
-    try {
+    try{
+      // 取音色
+      const { voice_id: voiceId } = await fetchVoiceData()
+      console.log('~~~~~~~ voiceId', voiceId);
+
       // step1 上传图片到微信云存储，并返回图片公网 URL
       const { tempFileURL: imageTempURL, fileId } = await uploadImageToWxCloud()
-
-      // 获取 voiceId
-      const { voice_id: voiceId } = await fetchVoiceData()
-
-      console.log('~~~~~~~ voiceId', voiceId);
 
       // step 2：根据祝福文本+之前的音色，调用大模型合成声音
       const audioRes = await generateAudio(blessingText, voiceId)
