@@ -36,6 +36,11 @@ function Home() {
 
   useLoad(async () => {
     console.log('loading video list.' +  state.userInfo?._openid);
+    // _openid是强校验，否则会有水平权限问题
+    if (state.userInfo?._openid == null) {
+      console.log('_openid empty!!!!');
+      return;
+    }
     const userTaskRt = await db.collection('user_task')
       .where({
         task_status: _.in(['SUCCEEDED', 'RUNNING', 'PENDING']),

@@ -6,6 +6,7 @@ import CustomTabBar from '@/components/CustomTabBar';
 import { GenerateAudioResponse, GenerateVideoResponse, Voice } from '@/types';
 import dayjs from 'dayjs';
 import './index.scss';
+import {useGlobal} from '../../GlobalContext';
 
 interface CloudFileInfo {
   tempFileURL: string;
@@ -17,6 +18,7 @@ const VideoCreator: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<FileItem>();
   const [blessingText, setBlessingText] = useState('');
   const [loading, setLoading] = useState(false);
+  const { state } = useGlobal();
 
   const handleUploadChange: UploaderProps['onChange'] = (files) => {
     if (files.length > 0) {
@@ -166,7 +168,7 @@ const VideoCreator: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('use effect');
+    console.log('use effect', state.userInfo?._openid);
     // todo：如果用户在分享页面，直接点击【制作同款】，强校验其是否有采集过音色；如果没有需要redirect过去
   });
 
