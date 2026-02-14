@@ -25,6 +25,7 @@ function Mine() {// const [visible, setVisible] = useState(false)
       我们相信声音与AI，我们会在人文与科技的十字路口更好的相遇。
       </view>
       <view>Enjoy~</view>
+      <view>2026.2.14 情人节~</view>
       </View>
       <CustomTabBar />
     </View>
