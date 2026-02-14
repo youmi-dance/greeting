@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, ScrollView } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
-import { Grid, GridItem, Image, FixedNav } from '@nutui/nutui-react-taro'
+import { Grid, GridItem, Image, FixedNav, Toast} from '@nutui/nutui-react-taro'
 import CustomTabBar from '@/components/CustomTabBar'
 import { VideoList, Video } from '@/types/video';
 import './index.scss'
@@ -29,12 +29,14 @@ const debugList = [
 
 function Home() {
   const db = Taro.cloud.database()
+  const _ = db.command;
   const [videoList, setVideoList] = useState<VideoList>([])
 
   useLoad(async () => {
+    console.log('loading video list.');
     const userTaskRt = await db.collection('user_task')
       .where({
-        task_status: 'SUCCEEDED'
+        task_status: _.in(['SUCCEEDED', 'RUNNING', 'PENDING'])
       })
       .get()
     setVideoList(userTaskRt.data as VideoList);
@@ -50,9 +52,19 @@ function Home() {
 
 
   const listItemClick = (video: Video) => {
-    Taro.navigateTo({
-      url: `/pages/player/index?videoId=${video._id}`
-    })
+    // 列表中成功/生成中的均会展示，但只有成功的才能播放
+    // todo: 但这个逻辑为啥没起作用?
+    if(video.task_status !== 'SUCCEEDED') {
+      Toast.show('notice', {
+        content: '还在生成中，请稍后再试',
+        position: 'center',
+        type: 'warn'
+      })
+    } else {
+      Taro.navigateTo({
+       url: `/pages/player/index?videoId=${video._id}`
+      })
+  }
   }
 
   const renderList = () => {
