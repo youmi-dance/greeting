@@ -137,7 +137,7 @@ const VideoCreator: React.FC = () => {
    * @param audioURL
    * @param imageURL
    */
-  const generateVideo = async (audioURL: string, imageURL: string) => {
+  const generateVideo = async (audioURL: string, imageURL: string, duration: number) => {
     try {
       const res = await Taro.request<GenerateVideoResponse>({
         url: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis',
@@ -152,7 +152,7 @@ const VideoCreator: React.FC = () => {
           parameters: {
             resolution: '720P',
             prompt_extend: true,
-            duration: 10,
+            duration: duration,
           },
         },
         header: {
@@ -207,7 +207,10 @@ const VideoCreator: React.FC = () => {
 
       const audioURL = audioRes.data.output.audio.url
       // step 3：再调千问最后合成视频
-      const videoRes = await generateVideo(audioURL, imageTempURL)
+      // 预估语音长度，用于后面的视频生成长度
+      const duration = estimateVoiceDuration(blessingText);
+      const videoDuration = duration > 10 ? 10 : duration; // 千问最长生成10秒视频
+      const videoRes = await generateVideo(audioURL, imageTempURL, videoDuration)
 
       // step 4：存入数据库
       const {
@@ -254,6 +257,27 @@ const VideoCreator: React.FC = () => {
     }
   };
 
+
+  // 返回文本对应的语音时长预估
+  const estimateVoiceDuration = (text) => {
+    if (!text || typeof text !== 'string') {
+      return 0;
+    }
+    const wordsPerMinute: number = 270
+    // 只统计中文字符、英文字母、数字（忽略标点、空格、换行等）
+    const validChars = text.match(/[\u4e00-\u9fa5a-zA-Z0-9]/g) || [];
+    const charCount = validChars.length;
+    if (charCount === 0) {
+      return 0;
+    }
+    // 计算每秒字数
+    const charsPerSecond = wordsPerMinute / 60;
+    // 时长 = 字数 / 每秒字数
+    const duration = charCount / charsPerSecond;
+    // 保留1位小数，向上取整更符合实际（避免太短）
+    return Math.round(duration * 10) / 10;
+  }
+
   return (
     <View className='video-creator'>
       <Toast id='notice' />
@@ -294,7 +318,7 @@ const VideoCreator: React.FC = () => {
             <TextArea
               placeholder='美好祝愿从这里开始...'
               className='custom-textarea'
-              maxLength={25}
+              maxLength={42}
               showCount
               value={blessingText}
               onChange={(v) => setBlessingText(v)}

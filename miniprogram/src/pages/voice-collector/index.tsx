@@ -170,7 +170,7 @@ const VoiceCollector: React.FC = () => {
       throw err;
     }
   }
-
+  
   // 获取上传文件的临时链接
   const getVoiceFileTempURLByFileId = async (fileID): Promise<string> => {
     try {
