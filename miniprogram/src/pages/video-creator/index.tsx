@@ -211,7 +211,7 @@ const VideoCreator: React.FC = () => {
       const duration = estimateVoiceDuration(blessingText);
       const videoDuration = Math.min(Math.max(duration, 2), 15);
       console.log('duration: ', videoDuration);
-      return ;
+      //return ;
       /**
        * wan2.6-i2v-flash：取值为[2, 15]之间的整数。默认值为5。
        * 详见
