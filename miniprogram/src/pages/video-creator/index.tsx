@@ -210,6 +210,7 @@ const VideoCreator: React.FC = () => {
       // 预估语音长度，用于后面的视频生成长度
       const duration = estimateVoiceDuration(blessingText);
       const videoDuration = Math.min(Math.max(duration, 2), 15);
+      console.log('duration: ', videoDuration);
       /**
        * wan2.6-i2v-flash：取值为[2, 15]之间的整数。默认值为5。
        * 详见
@@ -280,7 +281,7 @@ const VideoCreator: React.FC = () => {
     // 时长 = 字数 / 每秒字数
     const duration = charCount / charsPerSecond;
     // 保留1位小数，向上取整更符合实际（避免太短）
-    return Math.round(duration * 10) / 10;
+    return Math.round(duration);
   }
 
   return (
