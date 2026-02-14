@@ -226,7 +226,7 @@ const VideoCreator: React.FC = () => {
       Taro.hideLoading();
       const modalRes = await Taro.showModal({
         title: '生成成功',
-        content: '您的祝福视频生成任务已创建，大概需要等待1-2分钟',
+        content: '你的祝福视频生成任务已创建，大概需要等待1-2分钟',
         confirmText: '回首页',
         showCancel: false,
       });

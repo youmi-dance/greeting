@@ -11,8 +11,8 @@ const Player: React.FC = () => {
   const [video, setVideo] = useState<Types.Video>();
 
   useShareAppMessage(() => ({
-    title: '看看我用 AI 制作的专属祝福视频',
-    path: '/pages/player/index',
+    title: '看看我用AI制作的专属祝福视频',
+    path: '/pages/player/index?videoId=' + video?._id,
   }));
 
   useLoad(async () => {
@@ -68,12 +68,13 @@ const Player: React.FC = () => {
 
         <View className='video-info-box'>
           <View className='user-name'>@悠米祝福</View>
-          <View className='video-topic'>基于你的独特原声生成的专属祝福视频</View>
+          <View className='video-topic'>基于你的AI原声生成的专属祝福视频</View>
           <SafeArea position='bottom' />
         </View>
       </View>
     </View>
   );
+
 };
 
 export default Player;
