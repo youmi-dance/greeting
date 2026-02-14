@@ -111,15 +111,6 @@ function Home() {
       <CustomTabBar />
       <View className='header-bg' />
 
-      <FixedNav
-        list={debugList}
-        inactiveText='DEV'
-        // overlay
-        position={{ top: '520px' }}
-        onChange={change}
-        visible={visible}
-        onSelect={handleNavSelect}
-      />
     </View>
   )
 }
