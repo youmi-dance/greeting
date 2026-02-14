@@ -5,10 +5,13 @@ import { Video, Button, SafeArea } from '@nutui/nutui-react-taro';
 import { Share, Edit } from '@nutui/icons-react-taro';
 import * as Types from '@/types';
 import './index.scss';
+import {useGlobal} from '../../GlobalContext';
 
 const Player: React.FC = () => {
   const db = Taro.cloud.database()
   const [video, setVideo] = useState<Types.Video>();
+  const _ = db.command;
+  const { state } = useGlobal();
 
   useShareAppMessage(() => ({
     title: '看看我用AI制作的专属祝福视频',
@@ -19,7 +22,7 @@ const Player: React.FC = () => {
     const routerParams = Taro.getCurrentInstance().router?.params ?? {}
     const { videoId = '' } = routerParams
     console.log('~~~~~~~ videoId', videoId)
-    //const { data } = await db.collection('user_task').doc(videoId).get()
+    console.log('~~~~ _openid', state.userInfo?._openid)
     const {data} = await db.collection('user_task').where({
       _id: videoId
     }).get()

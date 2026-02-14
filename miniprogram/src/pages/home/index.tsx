@@ -5,6 +5,7 @@ import { Grid, GridItem, Image, FixedNav, Toast} from '@nutui/nutui-react-taro'
 import CustomTabBar from '@/components/CustomTabBar'
 import { VideoList, Video } from '@/types/video';
 import './index.scss'
+import {useGlobal} from '../../GlobalContext';
 
 const debugList = [
   {
@@ -31,12 +32,14 @@ function Home() {
   const db = Taro.cloud.database()
   const _ = db.command;
   const [videoList, setVideoList] = useState<VideoList>([])
+  const { state } = useGlobal();
 
   useLoad(async () => {
-    console.log('loading video list.');
+    console.log('loading video list.' +  state.userInfo?._openid);
     const userTaskRt = await db.collection('user_task')
       .where({
-        task_status: _.in(['SUCCEEDED', 'RUNNING', 'PENDING'])
+        task_status: _.in(['SUCCEEDED', 'RUNNING', 'PENDING']),
+        _openid: state.userInfo?._openid
       })
       .get()
     setVideoList(userTaskRt.data as VideoList);

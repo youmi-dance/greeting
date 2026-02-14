@@ -3,9 +3,13 @@ import Taro, { useDidShow, useDidHide, useLaunch } from '@tarojs/taro'
 import { View } from '@tarojs/components';
 // 全局样式
 import './app.scss'
+import { GlobalProvider, useGlobal} from './GlobalContext';
+import Index from './pages/index';
+import GlobalInitializer from './GlobalInitializer';
 
 function App(props: React.PropsWithChildren) {
   const { children } = props
+  const {setState } = useGlobal();
 
   // 小程序初始化时触发
   useLaunch(async (options) => {
@@ -44,6 +48,7 @@ function App(props: React.PropsWithChildren) {
           code,
         }
       })
+      const _openid = loginRt.result?.data.openId;
       console.log('~~~~~~~ finish login', loginRt);
     } catch (err) {
       await Taro.showToast({ title: '登录失败', icon: 'error' });
@@ -61,7 +66,10 @@ function App(props: React.PropsWithChildren) {
 
   return (
     <View>
-      {children}
+      <GlobalProvider>
+        <GlobalInitializer />
+        {children}
+      </GlobalProvider>
     </View>
   );
 }
