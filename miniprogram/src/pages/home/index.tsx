@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, ScrollView } from '@tarojs/components'
+import { View, ScrollView, Text} from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
 import { Grid, GridItem, Image, FixedNav, Toast} from '@nutui/nutui-react-taro'
 import CustomTabBar from '@/components/CustomTabBar'
@@ -75,6 +75,13 @@ function Home() {
   }
   }
 
+  const statusTextMap: Record<string, string> = {
+    'PENDING': '生成中...',
+    'SUCCEEDED': '',
+    'RUNNING': '',
+    'FAILED': '生成失败，请重试'
+  };
+
   const renderList = () => {
     return (
       <Grid columns={2} gap={10} className='video-grid'>
@@ -92,6 +99,9 @@ function Home() {
                 height='180' // 竖屏比例的关键：高度增加
                 radius={12}
               />
+              <Text className="status-text">
+              {statusTextMap[item.task_status]} {/* 兜底 */}
+              </Text>
             </GridItem>
           ))
         }

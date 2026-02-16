@@ -269,7 +269,7 @@ const VideoCreator: React.FC = () => {
     if (!text || typeof text !== 'string') {
       return 0;
     }
-    const wordsPerMinute: number = 155
+    const wordsPerMinute: number = 150
     // 只统计中文字符、英文字母、数字（忽略标点、空格、换行等）
     const validChars = text.match(/[\u4e00-\u9fa5a-zA-Z0-9]/g) || [];
     const charCount = validChars.length;
