@@ -211,7 +211,6 @@ const VideoCreator: React.FC = () => {
       const duration = estimateVoiceDuration(blessingText);
       const videoDuration = Math.min(Math.max(duration, 2), 15);
       console.log('duration: ', videoDuration);
-      //return ;
       /**
        * wan2.6-i2v-flash：取值为[2, 15]之间的整数。默认值为5。
        * 详见
@@ -270,7 +269,7 @@ const VideoCreator: React.FC = () => {
     if (!text || typeof text !== 'string') {
       return 0;
     }
-    const wordsPerMinute: number = 135
+    const wordsPerMinute: number = 150
     // 只统计中文字符、英文字母、数字（忽略标点、空格、换行等）
     const validChars = text.match(/[\u4e00-\u9fa5a-zA-Z0-9]/g) || [];
     const charCount = validChars.length;
